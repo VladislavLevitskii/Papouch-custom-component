@@ -19,19 +19,16 @@ async def test_setup_unload_and_reload(
     """Test successful setup, reload and unload of the integration."""
     mock_config_entry.add_to_hass(hass)
 
-    # Test nastartování
     assert await hass.config_entries.async_setup(mock_config_entry.entry_id)
     await hass.async_block_till_done()
     assert mock_config_entry.state is ConfigEntryState.LOADED
 
-    # Test Options Flow Reload (update_listener)
     hass.config_entries.async_update_entry(
         mock_config_entry, options={"refresh_rate": 30}
     )
     await hass.async_block_till_done()
     assert mock_config_entry.state is ConfigEntryState.LOADED
 
-    # Test odpojení
     assert await hass.config_entries.async_unload(mock_config_entry.entry_id)
     await hass.async_block_till_done()
     assert mock_config_entry.state is ConfigEntryState.NOT_LOADED
