@@ -16,10 +16,10 @@
       "macaddress": "049162*"
     }
   ],
-  "documentation": "https://github.com/VladislavLevitskii/Papouch-HACS#readme",
+  "documentation": "https://github.com/VladislavLevitskii/Papouch-custom-component#readme",
   "integration_type": "device",
   "iot_class": "local_polling",
-  "issue_tracker": "https://github.com/VladislavLevitskii/Papouch-HACS/issues",
+  "issue_tracker": "https://github.com/VladislavLevitskii/Papouch-custom-component/issues",
   "requirements": [
     "aiopapouch==0.1.1"
   ],
