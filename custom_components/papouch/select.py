@@ -1,0 +1,99 @@
+"""Select platform for the Papouch integration."""
+
+from typing import TYPE_CHECKING, Any, override
+
+import aiopapouch.exceptions as aiopapouch_exceptions
+from homeassistant.components.select import SelectEntity
+from homeassistant.helpers.device_registry import format_mac
+
+from .entity import PapouchEntity
+from .exceptions import PapouchAuthError, PapouchCommandError, PapouchConnectionError
+
+if TYPE_CHECKING:
+    from homeassistant.core import HomeAssistant
+    from homeassistant.helpers.entity_platform import AddConfigEntryEntitiesCallback
+
+    from . import PapouchConfigEntry
+    from .coordinator import PapouchDataUpdateCoordinator
+
+PARALLEL_UPDATES = 0
+
+
+async def async_setup_entry(
+    hass: HomeAssistant,  # noqa: ARG001
+    entry: PapouchConfigEntry,
+    async_add_entities: AddConfigEntryEntitiesCallback,
+) -> None:
+    """Set up the Papouch select platform."""
+    coordinator = entry.runtime_data
+    device = coordinator.device
+
+    entities = []
+
+    for select_data in device.get_supported_selects():
+        entities.append(PapouchSelectEntity(coordinator, entry, select_data))  # noqa: PERF401
+
+    async_add_entities(entities)
+
+
+class PapouchSelectEntity(PapouchEntity, SelectEntity):
+    """Representation of a unified Papouch select entity."""
+
+    def __init__(
+        self,
+        coordinator: PapouchDataUpdateCoordinator,
+        entry: PapouchConfigEntry,
+        select_data: dict[str, Any],
+    ) -> None:
+        """Initialize the select entity."""
+        super().__init__(coordinator, entry)
+
+        mac = format_mac(coordinator.device.mac_address)
+
+        self.item_id = select_data["item_id"]
+        self.category = select_data["category"]
+
+        self._attr_unique_id = f"{mac}_{self.category}_{self.item_id}"
+
+        if select_data.get("use_custom_name", False):
+            self._attr_name = select_data["name"]
+        else:
+            self._attr_translation_key = select_data["translation"]
+            if "placeholder" in select_data:
+                self._attr_translation_placeholders = select_data["placeholder"]
+
+        self._attr_options = select_data["options"]
+
+    @property
+    @override
+    def current_option(self) -> str | None:
+        """Return the currently selected option."""
+        return self.coordinator.device.get_select_option(self.category, self.item_id)
+
+    @override
+    async def async_select_option(self, option: str) -> None:
+        """Change the selected option on the device."""
+        try:
+            await self.coordinator.device.set_select_option(
+                self.category, self.item_id, option
+            )
+        except aiopapouch_exceptions.DeviceAuthError as err:
+            raise PapouchAuthError(
+                translation_placeholders={"name": self.coordinator.device.name}
+            ) from err
+        except aiopapouch_exceptions.DeviceConnectionError as err:
+            raise PapouchConnectionError(
+                translation_placeholders={
+                    "name": self.coordinator.device.name,
+                    "location": self.coordinator.device.location,
+                }
+            ) from err
+        except aiopapouch_exceptions.DeviceError as err:
+            raise PapouchCommandError(
+                translation_placeholders={
+                    "cmd": f"select_{self.category}",
+                    "name": self.coordinator.device.name,
+                }
+            ) from err
+
+        self.coordinator.async_set_updated_data(self.coordinator.data)

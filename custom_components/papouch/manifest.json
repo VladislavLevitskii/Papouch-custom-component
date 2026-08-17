@@ -1,0 +1,27 @@
+{
+  "domain": "papouch",
+  "name": "Papouch",
+  "codeowners": [
+    "@VladislavLevitskii"
+  ],
+  "config_flow": true,
+  "dhcp": [
+    {
+      "macaddress": "0080A3*"
+    },
+    {
+      "macaddress": "00204A*"
+    },
+    {
+      "macaddress": "049162*"
+    }
+  ],
+  "documentation": "https://www.home-assistant.io/integrations/papouch",
+  "integration_type": "device",
+  "iot_class": "local_polling",
+  "issue_tracker": "https://github.com/VladislavLevitskii/Papouch-HACS/issues",
+  "requirements": [
+    "aiopapouch==0.1.1"
+  ],
+  "version": "1.0.0"
+}
