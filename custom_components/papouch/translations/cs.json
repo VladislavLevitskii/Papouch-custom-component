@@ -1,0 +1,244 @@
+{
+    "config": {
+        "abort": {
+            "already_configured": "Toto zařízení je již nakonfigurováno, můžete jej odstranit z integrace a nakonfigurovat znovu.",
+            "cannot_connect": "Home Assistant se nemůže připojit k zařízení.",
+            "mode_is_missing": "Zařízení neposkytlo svůj aktuální režim",
+            "reauth_successful": "Opětovné ověření proběhlo úspěšně",
+            "reconfigure_successful": "Překonfigurace zařízení proběhla úspěšně.",
+            "unsupported_device": "Toto zařízení není podporováno.",
+            "web_mode_required": "Integrace vyžaduje, aby bylo zařízení v režimu webu, aby mohlo fungovat."
+        },
+        "create_entry": {
+            "default": "Zařízení bylo úspěšně nakonfigurováno.",
+            "web_mode_success": "Zařízení bylo úspěšně přepnuto do WEB režimu. Počkejte prosím 10 sekund, než se zařízení restartuje."
+        },
+        "error": {
+            "cannot_connect": "Nepodařilo se připojit k zařízení.",
+            "invalid_auth": "Zadané heslo je neplatné, zkuste jiné.",
+            "invalid_ip_format": "Neplatný formát IPv4 adresy."
+        },
+        "flow_title": "{name}",
+        "step": {
+            "discovery_confirm": {
+                "data": {
+                    "password": "Heslo (volitelné)",
+                    "refresh_rate": "Interval skenování (sekundy)"
+                },
+                "data_description": {
+                    "password": "Ponechte prázdné, pokud vaše zařízení nevyžaduje ověření.",
+                    "refresh_rate": "Jak často má Home Assistant dotazovat zařízení na nová data."
+                },
+                "description": "Chcete přidat {name} do Home Assistant?",
+                "title": "Přidat {name}"
+            },
+            "manual": {
+                "data": {
+                    "ip_address": "IPv4 adresa",
+                    "password": "Heslo (volitelné)",
+                    "refresh_rate": "Interval skenování (sekundy)"
+                },
+                "data_description": {
+                    "ip_address": "Zadejte IPv4 adresu vašeho zařízení.",
+                    "password": "Ponechte prázdné, pokud vaše zařízení nevyžaduje ověření.",
+                    "refresh_rate": "Jak často má Home Assistant dotazovat zařízení na nová data."
+                },
+                "title": "Ruční nastavení"
+            },
+            "reauth_confirm": {
+                "data": {
+                    "password": "Nové heslo"
+                },
+                "data_description": {
+                    "password": "Zadejte nové administrátorské heslo zařízení."
+                },
+                "description": "Heslo pro vaše zařízení **{name}** již není platné. Zadejte prosím nové heslo.",
+                "title": "Znovu ověřit {name}"
+            },
+            "reconfigure": {
+                "data": {
+                    "ip_address": "IPv4 adresa",
+                    "password": "Heslo (volitelné)"
+                },
+                "data_description": {
+                    "ip_address": "Zadejte novou IPv4 adresu vašeho zařízení.",
+                    "password": "Zadejte nové administrátorské heslo zařízení (volitelné)."
+                },
+                "description": "Aktualizujte podrobnosti připojení pro vaše zařízení.",
+                "title": "Překonfigurovat {name}"
+            },
+            "user": {
+                "data": {
+                    "ip_address": "IPv4 adresa",
+                    "password": "Heslo (volitelné)",
+                    "refresh_rate": "Interval skenování (sekundy)"
+                },
+                "data_description": {
+                    "ip_address": "Vyberte nalezené zařízení nebo zvolte ruční zadání.",
+                    "password": "Ponechte prázdné, pokud vaše zařízení nevyžaduje ověření.",
+                    "refresh_rate": "Jak často má Home Assistant dotazovat zařízení na nová data."
+                },
+                "title": "Přidat nové zařízení"
+            },
+            "web_mode": {
+                "description": "Zařízení aktuálně není v režimu webu. Chcete jej přepnout do režimu webu?",
+                "menu_options": {
+                    "abort_switch": "Zrušit",
+                    "execute_switch": "Změnit režim na WEB"
+                },
+                "title": "Povolit webový režim"
+            }
+        }
+    },
+    "entity": {
+        "binary_sensor": {
+            "input_placeholder": {
+                "name": "Vstup {placeholder}"
+            }
+        },
+        "button": {
+            "connect_all_coils": {
+                "name": "Připojit všechna relé"
+            },
+            "disconnect_all_coils": {
+                "name": "Odpojit všechna relé"
+            },
+            "reset_all_counters": {
+                "name": "Resetovat všechna počitadla"
+            },
+            "set_sensor": {
+                "name": "Nastavit senzor automaticky"
+            },
+            "set_sensor_placeholder": {
+                "name": "Nastavit {placeholder} automaticky"
+            }
+        },
+        "number": {
+            "decrease_counter_placeholder": {
+                "name": "Snížit počitadlo {placeholder} o:"
+            },
+            "output_off_duration_placeholder": {
+                "name": "Výstup {placeholder} vypnutý po dobu (s)"
+            },
+            "output_on_duration_placeholder": {
+                "name": "Výstup {placeholder} zapnutý po dobu (s)"
+            },
+            "set_counter_placeholder": {
+                "name": "Nastavit počitadlo {placeholder} na:"
+            }
+        },
+        "select": {
+            "counter_mode": {
+                "name": "Režim počitadla {placeholder}",
+                "state": {
+                    "counts_ascending_and_descending_edges": "Počítá vzestupné a sestupné hrany",
+                    "counts_ascending_edges": "Počítá vzestupné hrany",
+                    "counts_descending_edges": "Počítá sestupné hrany",
+                    "off": "Vypnuto"
+                }
+            },
+            "sensor_type": {
+                "name": "Typ {placeholder}",
+                "state": {
+                    "temperature_ds": "Teplota (DS)",
+                    "temperature_humidity_th15": "Teplota / Vlhkost (TH15)",
+                    "temperature_humidity_th3x": "Teplota / Vlhkost (TH3x)",
+                    "temperature_tmp": "Teplota (TMP)",
+                    "unused": "Nepoužito"
+                }
+            },
+            "sensor_type_meteo_ab": {
+                "name": "Typ {placeholder}",
+                "state": {
+                    "atmospheric_pressure": "Atmosférický tlak",
+                    "co2_concentration_sd4x": "Koncentrace CO2 (SCD4x)",
+                    "co2_concentration_t6713": "Koncentrace CO2 (T6713)",
+                    "rain_gauge": "Srážkoměr",
+                    "temperature_ds": "Teplota (DS)",
+                    "temperature_humidity_th3x": "Teplota / Vlhkost (TH3x)",
+                    "temperature_tmp": "Teplota (TMP)",
+                    "unused": "Nepoužito"
+                }
+            },
+            "sensor_type_meteo_c": {
+                "name": "Typ {placeholder}",
+                "state": {
+                    "davis": "Davis",
+                    "unused": "Nepoužito"
+                }
+            }
+        },
+        "sensor": {
+            "sensor_batt_placeholder": {
+                "name": "Baterie {placeholder}"
+            },
+            "sensor_co2_placeholder": {
+                "name": "CO2 {placeholder}"
+            },
+            "sensor_counter_placeholder": {
+                "name": "Počet vstupu {placeholder}"
+            },
+            "sensor_dew_point": {
+                "name": "Rosný bod"
+            },
+            "sensor_dew_point_placeholder": {
+                "name": "Rosný bod {placeholder}"
+            },
+            "sensor_humidity": {
+                "name": "Vlhkost"
+            },
+            "sensor_humidity_placeholder": {
+                "name": "Vlhkost {placeholder}"
+            },
+            "sensor_pressure_placeholder": {
+                "name": "Tlak {placeholder}"
+            },
+            "sensor_rain_placeholder": {
+                "name": "Srážky {placeholder}"
+            },
+            "sensor_rsii_placeholder": {
+                "name": "Síla signálu {placeholder}"
+            },
+            "sensor_temperature": {
+                "name": "Teplota"
+            },
+            "sensor_temperature_placeholder": {
+                "name": "Teplota {placeholder}"
+            },
+            "sensor_wind_direction_placeholder": {
+                "name": "Směr větru {placeholder}"
+            },
+            "sensor_wind_speed_placeholder": {
+                "name": "Rychlost větru {placeholder}"
+            }
+        },
+        "switch": {
+            "output_placeholder": {
+                "name": "Výstup {placeholder}"
+            }
+        }
+    },
+    "exceptions": {
+        "cannot_connect": {
+            "message": "Nepodařilo se připojit k zařízení {name} ({location})."
+        },
+        "command_failed": {
+            "message": "Nepodařilo se provést příkaz {cmd} na zařízení {name}."
+        },
+        "invalid_auth": {
+            "message": "Neplatné heslo zařízení {name}"
+        }
+    },
+    "options": {
+        "step": {
+            "init": {
+                "data": {
+                    "refresh_rate": "Interval skenování (sekundy)"
+                },
+                "data_description": {
+                    "refresh_rate": "Jak často má Home Assistant dotazovat zařízení na nová data."
+                }
+            }
+        }
+    }
+}
