@@ -4,6 +4,72 @@ The **Papouch** integration allows you to integrate your [Papouch](https://papou
 
 The integration works by continuously polling the device for real-time data and updating the corresponding Home Assistant entities. In addition to monitoring, it provides command entities to control the device outputs, and configuration entities to adjust hardware settings, such as counter modes and sensor types.
 
+## Home Assistant Custom Component Installation Guide
+
+Installing custom components can be done using HACS (Home Assistant Community Store) or manually via the terminal.
+
+### Why HACS is the Recommended Method
+
+While HACS requires an initial setup since it is not included in Home Assistant by default, it is highly recommended over the manual terminal method for the following reasons:
+
+* **Automated Updates:** HACS tracks the component's GitHub repository and notifies you of new releases, allowing for one-click updates directly from the UI.
+* **Version Control:** You can easily roll back to a previous version of the integration if a new release introduces bugs or breaking changes.
+* **Error Reduction:** It automates the download, extraction, and placement of files, preventing common manual errors such as incorrect directory paths or permission issues.
+* **Centralized Management:** It provides a dedicated interface to view, manage, and remove all your custom integrations in one place.
+
+---
+
+### Method 1: Installation via HACS
+
+You can skip the first and the second step if you already have HACS installed.
+
+1. Install HACS by following the official [guide](https://hacs.xyz/docs/use/).
+2. Restart Home Assistant and configure the HACS integration.
+3. Open the Home Assistant web interface and navigate to **HACS** > **Integrations**.
+4. Click the three dots in the top right corner and select **Custom repositories**.
+5. Enter this GitHub repository URL of the component into the **Repository** field: `https://github.com/VladislavLevitskii/Papouch-custom-component`
+6. Select **Integration** in the **Category** dropdown and click **Add**.
+7. Close the dialog. The component will now appear in your available repositories.
+8. Click on it and select **Download** in the bottom right corner.
+9. Navigate to **Settings** > **System** and restart Home Assistant.
+10. After the restart, go to **Settings** > **Devices & Services**, click **Add Integration**, and search for the **Papouch** to configure it.
+
+---
+
+### Method 2: Manual Installation via Terminal
+
+If you prefer not to install HACS and forfeit automated updates, you can download the component manually using the command line. You will need access to the terminal (for example, via the **Advanced SSH & Web Terminal** add-on).
+
+1. Connect to your Home Assistant terminal.
+2. Run the following commands to download and extract the component files into the correct directory:
+
+```bash
+# Navigate to the Home Assistant configuration directory
+cd /config
+
+# Create the custom_components directory if it does not exist
+mkdir -p custom_components
+
+# Navigate into the custom_components directory
+cd custom_components
+
+# Download the component archive from GitHub
+wget https://github.com/VladislavLevitskii/Papouch-custom-component/archive/refs/heads/main.zip
+
+# Extract the downloaded archive
+unzip main.zip
+
+# Move the integration files directly into custom_components
+mv Papouch-custom-component-main/custom_components/papouch ./
+
+# Remove the downloaded archive and unnecessary extracted directories
+rm main.zip
+rm -rf Papouch-custom-component-main
+```
+
+3. Navigate to **Settings** > **System** and restart Home Assistant.
+4. After a successful restart, go to **Settings** > **Devices & Services**, click **Add Integration**, and search for the component to activate it.
+
 ## Supported devices
 
 Currently, only Ethernet devices in **WEB** mode are supported:
