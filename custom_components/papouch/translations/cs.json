@@ -3,8 +3,8 @@
         "abort": {
             "already_configured": "Toto zařízení je již nakonfigurováno, můžete jej odstranit z integrace a nakonfigurovat znovu.",
             "cannot_connect": "Home Assistant se nemůže připojit k zařízení.",
-            "mode_is_missing": "Zařízení neposkytlo svůj aktuální režim",
-            "reauth_successful": "Opětovné ověření proběhlo úspěšně",
+            "mode_is_missing": "Zařízení neposkytlo svůj aktuální režim.",
+            "reauth_successful": "Opětovné ověření proběhlo úspěšně.",
             "reconfigure_successful": "Překonfigurace zařízení proběhla úspěšně.",
             "unsupported_device": "Toto zařízení není podporováno.",
             "web_mode_required": "Integrace vyžaduje, aby bylo zařízení v režimu webu, aby mohlo fungovat."
@@ -23,11 +23,13 @@
             "discovery_confirm": {
                 "data": {
                     "password": "Heslo (volitelné)",
-                    "refresh_rate": "Interval skenování (sekundy)"
+                    "refresh_rate": "Interval skenování (sekundy)",
+                    "web_port": "HTTP Port"
                 },
                 "data_description": {
                     "password": "Ponechte prázdné, pokud vaše zařízení nevyžaduje ověření.",
-                    "refresh_rate": "Jak často má Home Assistant dotazovat zařízení na nová data."
+                    "refresh_rate": "Jak často má Home Assistant dotazovat zařízení na nová data.",
+                    "web_port": "HTTP port zařízení. Výchozí hodnota je 80."
                 },
                 "description": "Chcete přidat {name} do Home Assistant?",
                 "title": "Přidat {name}"
@@ -36,12 +38,14 @@
                 "data": {
                     "ip_address": "IPv4 adresa",
                     "password": "Heslo (volitelné)",
-                    "refresh_rate": "Interval skenování (sekundy)"
+                    "refresh_rate": "Interval skenování (sekundy)",
+                    "web_port": "HTTP Port"
                 },
                 "data_description": {
                     "ip_address": "Zadejte IPv4 adresu vašeho zařízení.",
                     "password": "Ponechte prázdné, pokud vaše zařízení nevyžaduje ověření.",
-                    "refresh_rate": "Jak často má Home Assistant dotazovat zařízení na nová data."
+                    "refresh_rate": "Jak často má Home Assistant dotazovat zařízení na nová data.",
+                    "web_port": "HTTP port zařízení. Výchozí hodnota je 80."
                 },
                 "title": "Ruční nastavení"
             },
@@ -58,11 +62,13 @@
             "reconfigure": {
                 "data": {
                     "ip_address": "IPv4 adresa",
-                    "password": "Heslo (volitelné)"
+                    "password": "Heslo (volitelné)",
+                    "web_port": "HTTP Port"
                 },
                 "data_description": {
                     "ip_address": "Zadejte novou IPv4 adresu vašeho zařízení.",
-                    "password": "Zadejte nové administrátorské heslo zařízení (volitelné)."
+                    "password": "Zadejte nové administrátorské heslo zařízení (volitelné).",
+                    "web_port": "Zadejte HTTP port vašeho zařízení."
                 },
                 "description": "Aktualizujte podrobnosti připojení pro vaše zařízení.",
                 "title": "Překonfigurovat {name}"
@@ -71,12 +77,14 @@
                 "data": {
                     "ip_address": "IPv4 adresa",
                     "password": "Heslo (volitelné)",
-                    "refresh_rate": "Interval skenování (sekundy)"
+                    "refresh_rate": "Interval skenování (sekundy)",
+                    "web_port": "HTTP Port"
                 },
                 "data_description": {
                     "ip_address": "Vyberte nalezené zařízení nebo zvolte ruční zadání.",
                     "password": "Ponechte prázdné, pokud vaše zařízení nevyžaduje ověření.",
-                    "refresh_rate": "Jak často má Home Assistant dotazovat zařízení na nová data."
+                    "refresh_rate": "Jak často má Home Assistant dotazovat zařízení na nová data.",
+                    "web_port": "HTTP port zařízení. Výchozí hodnota je 80."
                 },
                 "title": "Přidat nové zařízení"
             },

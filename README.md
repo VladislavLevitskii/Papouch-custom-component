@@ -100,7 +100,7 @@ If your device was not discovered automatically, you can complete the setup manu
 
 1. The setup flow will always begin with an active network scan.
 2. If the list of discovered devices is empty, or if you prefer not to select any of the automatically discovered devices, choose the option to enter the IP address manually.
-3. Enter the device's IP address, your preferred polling interval, and the admin password (if set).
+3. Enter the device's IP address, your preferred polling interval, HTTP port and the admin password (if set).
 4. In the final step, you can assign the device to an area and customize its name.
 
 > **Note:**
@@ -120,7 +120,7 @@ If your device's IP address or access password changes, you can update the integ
 
 1. Go to **Settings** > **Devices & services**" and select the Papouch integration.
 2. Select the three dots menu, then select **Reconfigure**.
-3. Update the IP address or password as needed.
+3. You can update the IP address, password or HTTP port as needed.
 
 > **Note:**
 > The reconfiguration flow updates the connection credentials and IP address used by Home Assistant to communicate with the device. It does not modify the physical device's internal configuration (such as changing its IP address or password on the device itself).
