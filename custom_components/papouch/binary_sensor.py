@@ -18,7 +18,7 @@ if TYPE_CHECKING:
 
 
 async def async_setup_entry(
-    hass: HomeAssistant,  # noqa: ARG001
+    hass: HomeAssistant,
     entry: PapouchConfigEntry,
     async_add_entities: AddConfigEntryEntitiesCallback,
 ) -> None:

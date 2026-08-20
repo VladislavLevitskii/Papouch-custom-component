@@ -3,15 +3,22 @@
 from typing import TYPE_CHECKING
 
 import aiohttp
-import homeassistant.helpers.config_validation as cv
 from aiopapouch import PapouchHTTPClient, create_device
+
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import Platform
 from homeassistant.exceptions import ConfigEntryAuthFailed, ConfigEntryNotReady
 from homeassistant.helpers import device_registry as dr
 from homeassistant.helpers.aiohttp_client import async_get_clientsession
+import homeassistant.helpers.config_validation as cv
 
-from .const import AUTH_FAILED_ERROR, DEFAULT_WEB_PORT
+from .const import (
+    AUTH_FAILED_ERROR,
+    DEFAULT_WEB_PORT,
+    DOMAIN,
+    UNKNOWN_LOCATION,
+    UNKNOWN_NAME,
+)
 from .coordinator import PapouchDataUpdateCoordinator
 
 if TYPE_CHECKING:
@@ -19,7 +26,6 @@ if TYPE_CHECKING:
     from homeassistant.helpers.typing import ConfigType
 
 
-DOMAIN = "papouch"
 CONFIG_SCHEMA = cv.config_entry_only_config_schema(DOMAIN)
 PLATFORMS = [
     Platform.BINARY_SENSOR,
@@ -33,7 +39,7 @@ PLATFORMS = [
 type PapouchConfigEntry = ConfigEntry[PapouchDataUpdateCoordinator]
 
 
-async def async_setup(hass: HomeAssistant, config: ConfigType) -> bool:  # noqa: ARG001
+async def async_setup(hass: HomeAssistant, config: ConfigType) -> bool:
     """Set up. (Unused)."""
     return True
 
@@ -49,24 +55,35 @@ async def async_setup_entry(hass: HomeAssistant, entry: PapouchConfigEntry) -> b
 
     entry.async_on_unload(entry.add_update_listener(update_listener))
 
-    device_ip_msg = f"Papouch device at {api_client.ip_address}"
+    name, location = await api_client.get_device_info()
+    safe_name = name or UNKNOWN_NAME
+    safe_location = location or UNKNOWN_LOCATION  # Note that this is used in devices
 
     try:
         device = await create_device(api_client)
-    except aiohttp.ClientResponseError as err:
-        if err.status == AUTH_FAILED_ERROR:
-            auth_err_msg = f"Invalid authentication for {device_ip_msg}, error: {err}"
-            raise ConfigEntryAuthFailed(auth_err_msg) from err
-
-        auth_err_msg = f"Failed to connect to {device_ip_msg}, error: {err}"
-        raise ConfigEntryNotReady(auth_err_msg) from err
     except aiohttp.ClientError as err:
-        auth_err_msg = f"Failed to connect to {device_ip_msg}, error: {err}"
-        raise ConfigEntryNotReady(auth_err_msg) from err
+        if (
+            isinstance(err, aiohttp.ClientResponseError)
+            and err.status == AUTH_FAILED_ERROR
+        ):
+            raise ConfigEntryAuthFailed(
+                translation_domain=DOMAIN,
+                translation_key="invalid_auth",
+                translation_placeholders={"name": safe_name, "location": safe_location},
+            ) from err
+
+        raise ConfigEntryNotReady(
+            translation_domain=DOMAIN,
+            translation_key="cannot_connect",
+            translation_placeholders={"name": safe_name, "location": safe_location},
+        ) from err
 
     if device is None:
-        id_err_msg = "Failed to identify device type"
-        raise ConfigEntryNotReady(id_err_msg)
+        raise ConfigEntryNotReady(
+            translation_domain=DOMAIN,
+            translation_key="unsupported_device",
+            translation_placeholders={"name": safe_name, "location": safe_location},
+        )
 
     if entry.unique_id is None and device.mac_address:
         hass.config_entries.async_update_entry(entry, unique_id=device.mac_address)

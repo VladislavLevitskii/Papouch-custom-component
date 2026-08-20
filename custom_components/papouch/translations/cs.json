@@ -234,7 +234,10 @@
             "message": "Nepodařilo se provést příkaz {cmd} na zařízení {name}."
         },
         "invalid_auth": {
-            "message": "Neplatné heslo zařízení {name}"
+            "message": "Neplatné heslo zařízení: {name} ({location})"
+        },
+        "unsupported_device": {
+            "message": "Zařítení {name} ({location}) není podporované."
         }
     },
     "options": {

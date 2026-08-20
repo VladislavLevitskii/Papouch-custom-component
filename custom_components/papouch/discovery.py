@@ -6,6 +6,7 @@ from typing import TYPE_CHECKING, cast, override
 
 from aiopapouch import PapouchHTTPClient, is_device_supported
 from aiopapouch.exceptions import DeviceAuthError, DeviceConnectionError
+
 from homeassistant.helpers.aiohttp_client import async_get_clientsession
 
 if TYPE_CHECKING:
@@ -45,8 +46,7 @@ class PapouchDiscoveryProtocol(asyncio.DatagramProtocol):
 async def _get_device_info(
     hass: HomeAssistant, ip_address: str
 ) -> tuple[str, str] | None:
-    """
-    Return tuple (location, name) of the device.
+    """Return tuple (location, name) of the device.
 
     If it is an unsupported device the function returns None.
     """
@@ -71,8 +71,7 @@ async def _get_device_info(
 async def async_discover_papouch_devices(
     hass: HomeAssistant,
 ) -> dict[str, tuple[str, str]]:
-    """
-    Broadcast discovery request and return a dictionary of discovered devices.
+    """Broadcast discovery request and return a dictionary of discovered devices.
 
     Creates semaphore preventing network congestion and fail-safe timeout that
     will destroy the session afterwards.
@@ -85,7 +84,7 @@ async def async_discover_papouch_devices(
 
     transport, protocol = await loop.create_datagram_endpoint(
         PapouchDiscoveryProtocol,
-        local_addr=("0.0.0.0", 0),  # noqa: S104
+        local_addr=("0.0.0.0", 0),
         allow_broadcast=True,
     )
 

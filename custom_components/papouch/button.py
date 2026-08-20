@@ -3,6 +3,7 @@
 from typing import TYPE_CHECKING, Any, override
 
 import aiopapouch.exceptions as aiopapouch_exceptions
+
 from homeassistant.components.button import ButtonEntity
 from homeassistant.helpers.device_registry import format_mac
 
@@ -20,7 +21,7 @@ if TYPE_CHECKING:
 
 
 async def async_setup_entry(
-    hass: HomeAssistant,  # noqa: ARG001
+    hass: HomeAssistant,
     entry: PapouchConfigEntry,
     async_add_entities: AddConfigEntryEntitiesCallback,
 ) -> None:
@@ -70,7 +71,10 @@ class PapouchCommandButton(PapouchEntity, ButtonEntity):
 
         except aiopapouch_exceptions.DeviceAuthError as err:
             raise PapouchAuthError(
-                translation_placeholders={"name": self.coordinator.device.name}
+                translation_placeholders={
+                    "name": self.coordinator.device.name,
+                    "location": self.coordinator.device.location,
+                }
             ) from err
 
         except aiopapouch_exceptions.DeviceConnectionError as err:
