@@ -23,5 +23,5 @@
   "requirements": [
     "aiopapouch==0.1.13"
   ],
-  "version": "1.0.5"
+  "version": "1.0.7"
 }
