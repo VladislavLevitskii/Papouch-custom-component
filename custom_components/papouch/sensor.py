@@ -129,7 +129,7 @@ async def async_setup_entry(
         base_desc = SENSOR_MAP.get(data_type)
 
         if not base_desc:
-            _LOGGER.error("Unknown sensor type '%s'. Skipping entity.", data_type)
+            _LOGGER.error("Unknown sensor type '%s'. Skipping entity", data_type)
             continue
 
         name_val = sensor_data.get("name")

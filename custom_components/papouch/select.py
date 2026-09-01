@@ -67,7 +67,7 @@ async def async_setup_entry(
         base_desc = SELECT_MAP.get(category)
 
         if not base_desc:
-            _LOGGER.error("Unknown select category '%s'. Skipping.", category)
+            _LOGGER.error("Unknown select category '%s'. Skipping", category)
             continue
 
         item_id = str(select_data["item_id"])
@@ -117,6 +117,7 @@ class PapouchSelectEntity(PapouchEntity, SelectEntity):
     @override
     async def async_select_option(self, option: str) -> None:
         """Change the selected option on the device."""
+
         try:
             await self.coordinator.device.set_select_option(
                 self.entity_description.category,

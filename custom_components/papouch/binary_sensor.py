@@ -61,7 +61,7 @@ async def async_setup_entry(
         base_desc = BINARY_SENSOR_MAP.get(data_type)
 
         if not base_desc:
-            _LOGGER.error("Unknown binary sensor type '%s'. Skipping.", data_type)
+            _LOGGER.error("Unknown binary sensor type '%s'. Skipping", data_type)
             continue
 
         item_id = str(sensor_data["item_id"])

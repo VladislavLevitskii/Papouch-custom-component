@@ -73,7 +73,7 @@ async def async_setup_entry(
         base_desc = BUTTON_MAP.get(map_key)
 
         if not base_desc:
-            _LOGGER.error("Unknown button command '%s'. Skipping.", cmd)
+            _LOGGER.error("Unknown button command '%s'. Skipping", cmd)
             continue
 
         name_val = btn_data.get("name")

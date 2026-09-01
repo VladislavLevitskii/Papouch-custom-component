@@ -7,14 +7,13 @@ import re
 from typing import TYPE_CHECKING, Any, override
 
 import aiohttp
+import voluptuous as vol
 from aiopapouch import PapouchHTTPClient, create_device, is_device_supported
 from aiopapouch.exceptions import (
     DeviceAuthError,
     DeviceConnectionError,
     DeviceLogicError,
 )
-import voluptuous as vol
-
 from homeassistant.config_entries import ConfigFlow, ConfigFlowResult, OptionsFlow
 from homeassistant.core import callback
 from homeassistant.helpers.aiohttp_client import async_get_clientsession
@@ -220,17 +219,15 @@ class PapouchConfigFlow(ConfigFlow, domain=DOMAIN):
             if result:
                 return result
 
-        schema = vol.Schema(
-            {
-                vol.Required("refresh_rate", default=DEFAULT_SCAN_INTERVAL): vol.All(
-                    int, vol.Range(min=1, max=3600)
-                ),
-                vol.Optional("web_port", default=DEFAULT_WEB_PORT): vol.All(
-                    int, vol.Range(min=1, max=65536)
-                ),
-                vol.Optional("password"): str,
-            }
-        )
+        schema = vol.Schema({
+            vol.Required("refresh_rate", default=DEFAULT_SCAN_INTERVAL): vol.All(
+                int, vol.Range(min=1, max=3600)
+            ),
+            vol.Optional("web_port", default=DEFAULT_WEB_PORT): vol.All(
+                int, vol.Range(min=1, max=65536)
+            ),
+            vol.Optional("password"): str,
+        })
 
         return self.async_show_form(
             step_id="discovery_confirm",
@@ -296,18 +293,16 @@ class PapouchConfigFlow(ConfigFlow, domain=DOMAIN):
         if user_input and "web_port" in user_input:
             default_web_port = user_input["web_port"]
 
-        schema = vol.Schema(
-            {
-                vol.Required("ip_address"): vol.In(options),
-                vol.Required("refresh_rate", default=default_interval): vol.All(
-                    int, vol.Range(min=1, max=3600)
-                ),
-                vol.Optional("web_port", default=default_web_port): vol.All(
-                    int, vol.Range(min=1, max=65536)
-                ),
-                vol.Optional("password"): str,
-            }
-        )
+        schema = vol.Schema({
+            vol.Required("ip_address"): vol.In(options),
+            vol.Required("refresh_rate", default=default_interval): vol.All(
+                int, vol.Range(min=1, max=3600)
+            ),
+            vol.Optional("web_port", default=default_web_port): vol.All(
+                int, vol.Range(min=1, max=65536)
+            ),
+            vol.Optional("password"): str,
+        })
 
         return self.async_show_form(step_id="user", data_schema=schema, errors=errors)
 
@@ -335,18 +330,16 @@ class PapouchConfigFlow(ConfigFlow, domain=DOMAIN):
         if user_input and "web_port" in user_input:
             default_web_port = user_input["web_port"]
 
-        schema = vol.Schema(
-            {
-                vol.Required("ip_address", default=default_ip): str,
-                vol.Required("refresh_rate", default=default_interval): vol.All(
-                    int, vol.Range(min=1, max=3600)
-                ),
-                vol.Optional("web_port", default=default_web_port): vol.All(
-                    int, vol.Range(min=1, max=65536)
-                ),
-                vol.Optional("password"): str,
-            }
-        )
+        schema = vol.Schema({
+            vol.Required("ip_address", default=default_ip): str,
+            vol.Required("refresh_rate", default=default_interval): vol.All(
+                int, vol.Range(min=1, max=3600)
+            ),
+            vol.Optional("web_port", default=default_web_port): vol.All(
+                int, vol.Range(min=1, max=65536)
+            ),
+            vol.Optional("password"): str,
+        })
 
         return self.async_show_form(step_id="manual", data_schema=schema, errors=errors)
 
@@ -465,11 +458,9 @@ class PapouchConfigFlow(ConfigFlow, domain=DOMAIN):
 
         return self.async_show_form(
             step_id="reauth_confirm",
-            data_schema=vol.Schema(
-                {
-                    vol.Optional("password"): str,
-                }
-            ),
+            data_schema=vol.Schema({
+                vol.Optional("password"): str,
+            }),
             errors=errors,
             description_placeholders={
                 "ip_address": self._reauth_entry.data["ip_address"]
@@ -527,15 +518,13 @@ class PapouchConfigFlow(ConfigFlow, domain=DOMAIN):
         if user_input and "web_port" in user_input:
             default_web_port = user_input["web_port"]
 
-        schema = vol.Schema(
-            {
-                vol.Required("ip_address", default=entry.data["ip_address"]): str,
-                vol.Optional("password", default=entry.data.get("password", "")): str,
-                vol.Optional("web_port", default=default_web_port): vol.All(
-                    int, vol.Range(min=1, max=65536)
-                ),
-            }
-        )
+        schema = vol.Schema({
+            vol.Required("ip_address", default=entry.data["ip_address"]): str,
+            vol.Optional("password", default=entry.data.get("password", "")): str,
+            vol.Optional("web_port", default=default_web_port): vol.All(
+                int, vol.Range(min=1, max=65536)
+            ),
+        })
 
         return self.async_show_form(
             step_id="reconfigure",
@@ -568,12 +557,10 @@ class PapouchOptionsFlowHandler(OptionsFlow):
             "refresh_rate", DEFAULT_SCAN_INTERVAL
         )
 
-        schema = vol.Schema(
-            {
-                vol.Required("refresh_rate", default=current_refresh): vol.All(
-                    int, vol.Range(min=1, max=3600)
-                ),
-            }
-        )
+        schema = vol.Schema({
+            vol.Required("refresh_rate", default=current_refresh): vol.All(
+                int, vol.Range(min=1, max=3600)
+            ),
+        })
 
         return self.async_show_form(step_id="init", data_schema=schema)

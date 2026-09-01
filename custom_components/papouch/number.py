@@ -77,7 +77,7 @@ async def async_setup_entry(
         base_desc = NUMBER_MAP.get(category)
 
         if not base_desc:
-            _LOGGER.error("Unknown number category '%s'. Skipping.", category)
+            _LOGGER.error("Unknown number category '%s'. Skipping", category)
             continue
 
         item_id = str(number_data["item_id"])

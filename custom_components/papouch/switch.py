@@ -57,7 +57,7 @@ async def async_setup_entry(
         base_desc = SWITCH_MAP.get(data_type)
 
         if not base_desc:
-            _LOGGER.error("Unknown switch type '%s'. Skipping.", data_type)
+            _LOGGER.error("Unknown switch type '%s'. Skipping", data_type)
             continue
 
         item_id = str(switch_data["item_id"])
@@ -98,10 +98,10 @@ class PapouchSwitch(PapouchEntity, SwitchEntity):
     @override
     def is_on(self) -> bool | None:
         """Return True if the switch is on."""
-        val = self.coordinator.data.get("output", {}).get(
+        val = self.coordinator.data.get("switch", {}).get(
             self.entity_description.item_id
         )
-        return val is True if val is not None else None
+        return val == 1 if val is not None else None
 
     @override
     async def async_turn_on(self, **kwargs: Any) -> None:
@@ -110,7 +110,6 @@ class PapouchSwitch(PapouchEntity, SwitchEntity):
             await self.coordinator.device.turn_on_switch(
                 self.entity_description.item_id
             )
-            await self.coordinator.async_request_refresh()
         except aiopapouch_exceptions.DeviceAuthError as err:
             raise PapouchAuthError(
                 translation_placeholders={
@@ -133,6 +132,11 @@ class PapouchSwitch(PapouchEntity, SwitchEntity):
                 }
             ) from err
 
+        if self.coordinator.data and "switch" in self.coordinator.data:
+            self.coordinator.data["switch"][self.entity_description.item_id] = 1
+
+        self.async_write_ha_state()
+
     @override
     async def async_turn_off(self, **kwargs: Any) -> None:
         """Turn the switch off."""
@@ -140,7 +144,6 @@ class PapouchSwitch(PapouchEntity, SwitchEntity):
             await self.coordinator.device.turn_off_switch(
                 self.entity_description.item_id
             )
-            await self.coordinator.async_request_refresh()
         except aiopapouch_exceptions.DeviceAuthError as err:
             raise PapouchAuthError(
                 translation_placeholders={
@@ -162,3 +165,8 @@ class PapouchSwitch(PapouchEntity, SwitchEntity):
                     "name": self.coordinator.device.name,
                 }
             ) from err
+
+        if self.coordinator.data and "switch" in self.coordinator.data:
+            self.coordinator.data["switch"][self.entity_description.item_id] = 0
+
+        self.async_write_ha_state()

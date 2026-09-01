@@ -145,8 +145,8 @@
           "off": "Off"
         }
       },
-      "sensor_type_custom": {
-        "name": "{name} type",
+      "sensor_type": {
+        "name": "Sensor type",
         "state": {
           "temperature_ds": "Temperature (DS)",
           "temperature_humidity_th15": "Temperature / Humidity (TH15)",
@@ -155,8 +155,8 @@
           "unused": "Unused"
         }
       },
-      "sensor_type": {
-        "name": "Sensor type",
+      "sensor_type_custom": {
+        "name": "{name} type",
         "state": {
           "temperature_ds": "Temperature (DS)",
           "temperature_humidity_th15": "Temperature / Humidity (TH15)",

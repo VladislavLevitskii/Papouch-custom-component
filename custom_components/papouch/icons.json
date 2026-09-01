@@ -76,13 +76,13 @@
       "humidity_custom": {
         "default": "mdi:water-percent"
       },
+      "precipitation_intensity_custom": {
+        "default": "mdi:weather-rainy"
+      },
       "pressure_custom": {
         "default": "mdi:gauge"
       },
       "rain_custom": {
-        "default": "mdi:weather-rainy"
-      },
-      "precipitation_intensity_custom": {
         "default": "mdi:weather-rainy"
       },
       "rssi_custom": {
