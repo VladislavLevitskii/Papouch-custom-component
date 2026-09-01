@@ -1,263 +1,301 @@
 {
   "config": {
     "abort": {
-      "already_configured": "This device is already configured, you can delete it from the integration and configure it again.",
-      "cannot_connect": "Home Assistant can't connect to the device.",
-      "mode_is_missing": "The device didn't provide its current mode",
-      "reauth_successful": "Re-authentication was successful",
-      "reconfigure_successful": "Device reconfiguration was successful.",
-      "unsupported_device": "This device is unsupported.",
-      "web_mode_required": "The integration requires the device to be in web mode to function."
+      "already_configured": "Toto zařízení je již nakonfigurováno, můžete ho odebrat z integrace a nakonfigurovat znovu.",
+      "cannot_connect": "Home Assistant se nemůže připojit k zařízení.",
+      "mode_is_missing": "Zařízení neposkytlo svůj aktuální režim.",
+      "reauth_successful": "Opětovné ověření bylo úspěšné.",
+      "reconfigure_successful": "Rekonfigurace zařízení byla úspěšná.",
+      "unsupported_device": "Toto zařízení není podporováno.",
+      "web_mode_required": "Aby integrace fungovala, vyžaduje, aby bylo zařízení v webovém režimu."
     },
     "create_entry": {
-      "default": "The device has been successfully configured.",
-      "web_mode_success": "The device was successfully switched to WEB mode. Please wait 10 seconds while the device restarts."
+      "default": "Zařízení bylo úspěšně nakonfigurováno.",
+      "web_mode_success": "Zařízení bylo úspěšně přepnuto do webového režimu. Počkejte prosím 10 sekund, než se zařízení restartuje."
     },
     "error": {
-      "cannot_connect": "Failed to connect to the device.",
-      "invalid_auth": "The password you provided is invalid, try a different one.",
-      "invalid_ip_format": "Invalid IPv4 address format."
+      "cannot_connect": "Nepodařilo se připojit k zařízení.",
+      "invalid_auth": "Zadané heslo je neplatné, zkuste jiné.",
+      "invalid_ip_format": "Neplatný formát IPv4 adresy."
     },
     "flow_title": "{name}",
     "step": {
       "discovery_confirm": {
         "data": {
-          "password": "Password (optional)",
-          "refresh_rate": "Scan Interval (seconds)",
-          "web_port": "HTTP Port"
+          "password": "Heslo (volitelné)",
+          "refresh_rate": "Interval skenování (sekundy)",
+          "web_port": "HTTP port"
         },
         "data_description": {
-          "password": "Leave blank if your device does not require authentication.",
-          "refresh_rate": "How often Home Assistant should poll the device for new data.",
-          "web_port": "The HTTP port of the device. Default is 80."
+          "password": "Pokud vaše zařízení nevyžaduje ověření, ponechte prázdné.",
+          "refresh_rate": "Jak často má Home Assistant dotazovat zařízení na nová data.",
+          "web_port": "HTTP port zařízení. Výchozí je 80."
         },
-        "description": "Do you want to add {name} to Home Assistant?",
-        "title": "Add {name}"
+        "description": "Chcete přidat {name} do Home Assistantu?",
+        "title": "Přidat {name}"
       },
       "manual": {
         "data": {
-          "ip_address": "IPv4 address",
-          "password": "Password (optional)",
-          "refresh_rate": "Scan interval (seconds)",
-          "web_port": "HTTP Port"
+          "ip_address": "IPv4 adresa",
+          "password": "Heslo (volitelné)",
+          "refresh_rate": "Interval skenování (sekundy)",
+          "web_port": "HTTP port"
         },
         "data_description": {
-          "ip_address": "Enter the IPv4 address of your device.",
-          "password": "Leave blank if your device does not require authentication.",
-          "refresh_rate": "How often Home Assistant should poll the device for new data.",
-          "web_port": "The HTTP port of the device. Default is 80."
+          "ip_address": "Zadejte IPv4 adresu vašeho zařízení.",
+          "password": "Pokud vaše zařízení nevyžaduje ověření, ponechte prázdné.",
+          "refresh_rate": "Jak často má Home Assistant dotazovat zařízení na nová data.",
+          "web_port": "HTTP port zařízení. Výchozí je 80."
         },
-        "title": "Manual Setup"
+        "title": "Ruční nastavení"
+      },
+      "network": {
+        "data": {
+          "ip_address": "IPv4 adresa",
+          "password": "Heslo (volitelné)",
+          "refresh_rate": "Interval skenování (sekundy)",
+          "web_port": "HTTP port"
+        },
+        "data_description": {
+          "ip_address": "Vyberte nalezené zařízení nebo zvolte ruční zadání.",
+          "password": "Pokud vaše zařízení nevyžaduje ověření, ponechte prázdné.",
+          "refresh_rate": "Jak často má Home Assistant dotazovat zařízení na nová data.",
+          "web_port": "HTTP port zařízení. Výchozí je 80."
+        },
+        "title": "Přidat nové síťové zařízení"
       },
       "reauth_confirm": {
         "data": {
-          "password": "New Password"
+          "password": "Nové heslo"
         },
         "data_description": {
-          "password": "Enter a new admin password of the device."
+          "password": "Zadejte nové heslo administrátora zařízení."
         },
-        "description": "The password for your device **{name}** is no longer valid. Please enter the new password.",
-        "title": "Reauthenticate {name}"
+        "description": "Heslo pro vaše zařízení **{name}** již není platné. Zadejte prosím nové heslo.",
+        "title": "Znovu ověřit {name}"
       },
       "reconfigure": {
         "data": {
-          "ip_address": "IPv4 Address",
-          "password": "Password (optional)",
-          "web_port": "HTTP Port"
+          "ip_address": "IPv4 adresa",
+          "password": "Heslo (volitelné)",
+          "web_port": "HTTP port"
         },
         "data_description": {
-          "ip_address": "Enter a new IPv4 address of your device.",
-          "password": "Enter a new admin password of the device (Optional).",
-          "web_port": "Enter the HTTP port of the device."
+          "ip_address": "Zadejte novou IPv4 adresu vašeho zařízení.",
+          "password": "Zadejte nové heslo administrátora zařízení (volitelné).",
+          "web_port": "Zadejte HTTP port zařízení."
         },
-        "description": "Update the connection details for your device.",
-        "title": "Reconfigure {name}"
+        "description": "Aktualizujte podrobnosti připojení pro vaše zařízení.",
+        "title": "Přeonfigurovat {name}"
+      },
+      "serial": {
+        "data": {
+          "baudrate": "Přenosová rychlost (Baudrate)",
+          "port": "Port",
+          "refresh_rate": "Interval skenování (sekundy)"
+        },
+        "data_description": {
+          "baudrate": "Komunikační rychlost (baudrate) pro sériový port.",
+          "port": "Vyberte sériový port.",
+          "refresh_rate": "Jak často má Home Assistant dotazovat zařízení na nová data."
+        },
+        "title": "Přidat nový sériový hub"
+      },
+      "serial_manual": {
+        "data": {
+          "baudrate": "Přenosová rychlost (Baudrate)",
+          "port": "Cesta k portu",
+          "refresh_rate": "Interval skenování (sekundy)"
+        },
+        "data_description": {
+          "baudrate": "Komunikační rychlost (baudrate) pro sériový port.",
+          "port": "Cesta k sériovému portu (např. /dev/ttyUSB0 nebo COM1).",
+          "refresh_rate": "Jak často má Home Assistant dotazovat zařízení na nová data."
+        },
+        "title": "Přidat ruční sériový hub"
       },
       "user": {
         "data": {
-          "ip_address": "IPv4 address",
-          "password": "Password (optional)",
-          "refresh_rate": "Scan interval (seconds)",
-          "web_port": "HTTP Port"
+          "connection_type": "Typ připojení"
         },
         "data_description": {
-          "ip_address": "Select a discovered device or choose manual entry.",
-          "password": "Leave blank if your device does not require authentication.",
-          "refresh_rate": "How often Home Assistant should poll the device for new data.",
-          "web_port": "The HTTP port of the device. Default is 80."
+          "connection_type": "Zvolte, zda chcete připojit síť, nebo vytvořit nový sériový hub."
         },
-        "title": "Add a new device"
+        "title": "Vyberte typ připojení"
       },
       "web_mode": {
-        "description": "The device is currently not in web mode. Do you want to switch it to web mode?",
+        "description": "Zařízení aktuálně není ve webovém režimu. Chcete jej přepnout do webového režimu?",
         "menu_options": {
-          "abort_switch": "Cancel",
-          "execute_switch": "Change mode to WEB"
+          "abort_switch": "Zrušit",
+          "execute_switch": "Změnit režim na WEB"
         },
-        "title": "Enable Web Mode"
+        "title": "Povolit webový režim"
       }
     }
   },
   "entity": {
     "binary_sensor": {
       "input_custom": {
-        "name": "Input {name}"
+        "name": "Vstup {name}"
       }
     },
     "button": {
       "connect_all_coils": {
-        "name": "Connect all relays"
+        "name": "Zapnout všechna relé"
       },
       "disconnect_all_coils": {
-        "name": "Disconnect all relays"
+        "name": "Vypnout všechna relé"
       },
       "reset_all_counters": {
-        "name": "Reset all counters"
+        "name": "Resetovat všechna počítadla"
       },
       "set_sensor": {
-        "name": "Set sensor automatically"
+        "name": "Nastavit senzor automaticky"
       },
       "set_sensor_custom": {
-        "name": "Set {name} automatically"
+        "name": "Nastavit {name} automaticky"
       }
     },
     "number": {
       "decrease_counter_custom": {
-        "name": "Decrease counter {name} by:"
+        "name": "Snížit počítadlo {name} o:"
       },
       "output_off_duration_custom": {
-        "name": "Output {name} off for duration (s)"
+        "name": "Výstup {name} vypnut po dobu (s)"
       },
       "output_on_duration_custom": {
-        "name": "Output {name} on for duration (s)"
+        "name": "Výstup {name} zapnut po dobu (s)"
       },
       "set_counter_custom": {
-        "name": "Set counter {name} on:"
+        "name": "Nastavit počítadlo {name} na:"
       }
     },
     "select": {
       "counter_mode_custom": {
-        "name": "Counter {name} mode",
+        "name": "Režim počítadla {name}",
         "state": {
-          "counts_ascending_and_descending_edges": "Counts ascending and descending edges",
-          "counts_ascending_edges": "Counts ascending edges",
-          "counts_descending_edges": "Counts descending edges",
-          "off": "Off"
-        }
-      },
-      "sensor_type_custom": {
-        "name": "{name} type",
-        "state": {
-          "temperature_ds": "Temperature (DS)",
-          "temperature_humidity_th15": "Temperature / Humidity (TH15)",
-          "temperature_humidity_th3x": "Temperature / Humidity (TH3x)",
-          "temperature_tmp": "Temperature (TMP)",
-          "unused": "Unused"
+          "counts_ascending_and_descending_edges": "Počítá vzestupné i sestupné hrany",
+          "counts_ascending_edges": "Počítá vzestupné hrany",
+          "counts_descending_edges": "Počítá sestupné hrany",
+          "off": "Vypnuto"
         }
       },
       "sensor_type": {
-        "name": "Sensor type",
+        "name": "Typ senzoru",
         "state": {
-          "temperature_ds": "Temperature (DS)",
-          "temperature_humidity_th15": "Temperature / Humidity (TH15)",
-          "temperature_humidity_th3x": "Temperature / Humidity (TH3x)",
-          "temperature_tmp": "Temperature (TMP)",
-          "unused": "Unused"
+          "temperature_ds": "Teplota (DS)",
+          "temperature_humidity_th15": "Teplota / Vlhkost (TH15)",
+          "temperature_humidity_th3x": "Teplota / Vlhkost (TH3x)",
+          "temperature_tmp": "Teplota (TMP)",
+          "unused": "Nepoužito"
+        }
+      },
+      "sensor_type_custom": {
+        "name": "Typ {name}",
+        "state": {
+          "temperature_ds": "Teplota (DS)",
+          "temperature_humidity_th15": "Teplota / Vlhkost (TH15)",
+          "temperature_humidity_th3x": "Teplota / Vlhkost (TH3x)",
+          "temperature_tmp": "Teplota (TMP)",
+          "unused": "Nepoužito"
         }
       },
       "sensor_type_meteo_ab_custom": {
-        "name": "{name} type",
+        "name": "Typ {name}",
         "state": {
-          "atmospheric_pressure": "Atmospheric pressure",
-          "co2_concentration_sd4x": "CO2 concentration (SCD4x)",
-          "co2_concentration_t6713": "CO2 concentration (T6713)",
-          "rain_gauge": "Rain gauge",
-          "temperature_ds": "Temperature (DS)",
-          "temperature_humidity_th3x": "Temperature / Humidity (TH3x)",
-          "temperature_tmp": "Temperature (TMP)",
-          "unused": "Unused"
+          "atmospheric_pressure": "Atmosférický tlak",
+          "co2_concentration_sd4x": "Koncentrace CO2 (SCD4x)",
+          "co2_concentration_t6713": "Koncentrace CO2 (T6713)",
+          "rain_gauge": "Srážkoměr",
+          "temperature_ds": "Teplota (DS)",
+          "temperature_humidity_th3x": "Teplota / Vlhkost (TH3x)",
+          "temperature_tmp": "Teplota (TMP)",
+          "unused": "Nepoužito"
         }
       },
       "sensor_type_meteo_c_custom": {
-        "name": "{name} type",
+        "name": "Typ {name}",
         "state": {
           "davis": "Davis",
-          "unused": "Unused"
+          "unused": "Nepoužito"
         }
       }
     },
     "sensor": {
       "batt_custom": {
-        "name": "{name} battery"
+        "name": "Baterie {name}"
       },
       "co2_custom": {
-        "name": "{name} CO2"
+        "name": "CO2 {name}"
       },
       "counter_custom": {
-        "name": "Counter {name}"
+        "name": "Počítadlo {name}"
       },
       "dew_point": {
-        "name": "Dew point"
+        "name": "Rosný bod"
       },
       "dew_point_custom": {
-        "name": "{name} dew point"
+        "name": "Rosný bod {name}"
       },
       "humidity_custom": {
-        "name": "{name} humidity"
+        "name": "Vlhkost {name}"
       },
       "precipitation_intensity_custom": {
-        "name": "{name} precipitation intensity"
+        "name": "Intenzita srážek {name}"
       },
       "pressure_custom": {
-        "name": "{name} pressure"
+        "name": "Tlak {name}"
       },
       "rain_custom": {
-        "name": "{name} rainfall"
+        "name": "Úhrn srážek {name}"
       },
       "rssi_custom": {
-        "name": "{name} signal strength"
+        "name": "Síla signálu {name}"
       },
       "temperature_custom": {
-        "name": "{name} temperature"
+        "name": "Teplota {name}"
       },
       "wind_direction_custom": {
-        "name": "{name} wind direction"
+        "name": "Směr větru {name}"
       },
       "wind_direction_text_custom": {
-        "name": "{name} wind direction"
+        "name": "Směr větru {name}"
       },
       "wind_speed_custom": {
-        "name": "{name} wind speed"
+        "name": "Rychlost větru {name}"
       }
     },
     "switch": {
       "output_custom": {
-        "name": "Output {name}"
+        "name": "Výstup {name}"
       }
     }
   },
   "exceptions": {
     "cannot_connect": {
-      "message": "Failed to connect to device {name} ({location})."
+      "message": "Nepodařilo se připojit k zařízení {name} ({location})."
     },
     "command_failed": {
-      "message": "Failed to execute command {cmd} on {name}."
+      "message": "Nepodařilo se provést příkaz {cmd} na zařízení {name}."
     },
     "invalid_auth": {
-      "message": "Invalid password of device {name} ({location})"
+      "message": "Neplatné heslo zařízení {name} ({location})"
+    },
+    "unable_open_port": {
+      "message": "Nelze otevřít port {port}."
     },
     "unsupported_device": {
-      "message": "Device {name} ({location}) is unsupported."
+      "message": "Zařízení {name} ({location}) není podporováno."
     }
   },
   "options": {
     "step": {
       "init": {
         "data": {
-          "refresh_rate": "Scan interval (seconds)"
+          "refresh_rate": "Interval skenování (sekundy)"
         },
         "data_description": {
-          "refresh_rate": "How often Home Assistant should poll the device for new data."
+          "refresh_rate": "Jak často má Home Assistant dotazovat zařízení na nová data."
         }
       }
     }

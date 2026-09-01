@@ -1,265 +1,303 @@
 {
-    "config": {
-        "abort": {
-            "already_configured": "This device is already configured, you can delete it from the integration and configure it again.",
-            "cannot_connect": "Home Assistant can't connect to the device.",
-            "mode_is_missing": "The device didn't provide its current mode",
-            "reauth_successful": "Re-authentication was successful",
-            "reconfigure_successful": "Device reconfiguration was successful.",
-            "unsupported_device": "This device is unsupported.",
-            "web_mode_required": "The integration requires the device to be in web mode to function."
-        },
-        "create_entry": {
-            "default": "The device has been successfully configured.",
-            "web_mode_success": "The device was successfully switched to WEB mode. Please wait 10 seconds while the device restarts."
-        },
-        "error": {
-            "cannot_connect": "Failed to connect to the device.",
-            "invalid_auth": "The password you provided is invalid, try a different one.",
-            "invalid_ip_format": "Invalid IPv4 address format."
-        },
-        "flow_title": "{name}",
-        "step": {
-            "discovery_confirm": {
-                "data": {
-                    "password": "Password (optional)",
-                    "refresh_rate": "Scan Interval (seconds)",
-                    "web_port": "HTTP Port"
-                },
-                "data_description": {
-                    "password": "Leave blank if your device does not require authentication.",
-                    "refresh_rate": "How often Home Assistant should poll the device for new data.",
-                    "web_port": "The HTTP port of the device. Default is 80."
-                },
-                "description": "Do you want to add {name} to Home Assistant?",
-                "title": "Add {name}"
-            },
-            "manual": {
-                "data": {
-                    "ip_address": "IPv4 address",
-                    "password": "Password (optional)",
-                    "refresh_rate": "Scan interval (seconds)",
-                    "web_port": "HTTP Port"
-                },
-                "data_description": {
-                    "ip_address": "Enter the IPv4 address of your device.",
-                    "password": "Leave blank if your device does not require authentication.",
-                    "refresh_rate": "How often Home Assistant should poll the device for new data.",
-                    "web_port": "The HTTP port of the device. Default is 80."
-                },
-                "title": "Manual Setup"
-            },
-            "reauth_confirm": {
-                "data": {
-                    "password": "New Password"
-                },
-                "data_description": {
-                    "password": "Enter a new admin password of the device."
-                },
-                "description": "The password for your device **{name}** is no longer valid. Please enter the new password.",
-                "title": "Reauthenticate {name}"
-            },
-            "reconfigure": {
-                "data": {
-                    "ip_address": "IPv4 Address",
-                    "password": "Password (optional)",
-                    "web_port": "HTTP Port"
-                },
-                "data_description": {
-                    "ip_address": "Enter a new IPv4 address of your device.",
-                    "password": "Enter a new admin password of the device (Optional).",
-                    "web_port": "Enter the HTTP port of the device."
-                },
-                "description": "Update the connection details for your device.",
-                "title": "Reconfigure {name}"
-            },
-            "user": {
-                "data": {
-                    "ip_address": "IPv4 address",
-                    "password": "Password (optional)",
-                    "refresh_rate": "Scan interval (seconds)",
-                    "web_port": "HTTP Port"
-                },
-                "data_description": {
-                    "ip_address": "Select a discovered device or choose manual entry.",
-                    "password": "Leave blank if your device does not require authentication.",
-                    "refresh_rate": "How often Home Assistant should poll the device for new data.",
-                    "web_port": "The HTTP port of the device. Default is 80."
-                },
-                "title": "Add a new device"
-            },
-            "web_mode": {
-                "description": "The device is currently not in web mode. Do you want to switch it to web mode?",
-                "menu_options": {
-                    "abort_switch": "Cancel",
-                    "execute_switch": "Change mode to WEB"
-                },
-                "title": "Enable Web Mode"
-            }
-        }
+  "config": {
+    "abort": {
+      "already_configured": "This device is already configured, you can delete it from the integration and configure it again.",
+      "cannot_connect": "Home Assistant can't connect to the device.",
+      "mode_is_missing": "The device didn't provide its current mode",
+      "reauth_successful": "Re-authentication was successful",
+      "reconfigure_successful": "Device reconfiguration was successful.",
+      "unsupported_device": "This device is unsupported.",
+      "web_mode_required": "The integration requires the device to be in web mode to function."
     },
-    "entity": {
-        "binary_sensor": {
-            "input_custom": {
-                "name": "Input {name}"
-            }
-        },
-        "button": {
-            "connect_all_coils": {
-                "name": "Connect all relays"
-            },
-            "disconnect_all_coils": {
-                "name": "Disconnect all relays"
-            },
-            "reset_all_counters": {
-                "name": "Reset all counters"
-            },
-            "set_sensor": {
-                "name": "Set sensor automatically"
-            },
-            "set_sensor_custom": {
-                "name": "Set {name} automatically"
-            }
-        },
-        "number": {
-            "decrease_counter_custom": {
-                "name": "Decrease counter {name} by:"
-            },
-            "output_off_duration_custom": {
-                "name": "Output {name} off for duration (s)"
-            },
-            "output_on_duration_custom": {
-                "name": "Output {name} on for duration (s)"
-            },
-            "set_counter_custom": {
-                "name": "Set counter {name} on:"
-            }
-        },
-        "select": {
-            "counter_mode_custom": {
-                "name": "Counter {name} mode",
-                "state": {
-                    "counts_ascending_and_descending_edges": "Counts ascending and descending edges",
-                    "counts_ascending_edges": "Counts ascending edges",
-                    "counts_descending_edges": "Counts descending edges",
-                    "off": "Off"
-                }
-            },
-            "sensor_type": {
-                "name": "Sensor type",
-                "state": {
-                    "temperature_ds": "Temperature (DS)",
-                    "temperature_humidity_th15": "Temperature / Humidity (TH15)",
-                    "temperature_humidity_th3x": "Temperature / Humidity (TH3x)",
-                    "temperature_tmp": "Temperature (TMP)",
-                    "unused": "Unused"
-                }
-            },
-            "sensor_type_custom": {
-                "name": "{name} type",
-                "state": {
-                    "temperature_ds": "Temperature (DS)",
-                    "temperature_humidity_th15": "Temperature / Humidity (TH15)",
-                    "temperature_humidity_th3x": "Temperature / Humidity (TH3x)",
-                    "temperature_tmp": "Temperature (TMP)",
-                    "unused": "Unused"
-                }
-            },
-            "sensor_type_meteo_ab_custom": {
-                "name": "{name} type",
-                "state": {
-                    "atmospheric_pressure": "Atmospheric pressure",
-                    "co2_concentration_sd4x": "CO2 concentration (SCD4x)",
-                    "co2_concentration_t6713": "CO2 concentration (T6713)",
-                    "rain_gauge": "Rain gauge",
-                    "temperature_ds": "Temperature (DS)",
-                    "temperature_humidity_th3x": "Temperature / Humidity (TH3x)",
-                    "temperature_tmp": "Temperature (TMP)",
-                    "unused": "Unused"
-                }
-            },
-            "sensor_type_meteo_c_custom": {
-                "name": "{name} type",
-                "state": {
-                    "davis": "Davis",
-                    "unused": "Unused"
-                }
-            }
-        },
-        "sensor": {
-            "batt_custom": {
-                "name": "{name} battery"
-            },
-            "co2_custom": {
-                "name": "{name} CO2"
-            },
-            "counter_custom": {
-                "name": "Counter {name}"
-            },
-            "dew_point": {
-                "name": "Dew point"
-            },
-            "dew_point_custom": {
-                "name": "{name} dew point"
-            },
-            "humidity_custom": {
-                "name": "{name} humidity"
-            },
-            "precipitation_intensity_custom": {
-                "name": "{name} precipitation intensity"
-            },
-            "pressure_custom": {
-                "name": "{name} pressure"
-            },
-            "rain_custom": {
-                "name": "{name} rainfall"
-            },
-            "rssi_custom": {
-                "name": "{name} signal strength"
-            },
-            "temperature_custom": {
-                "name": "{name} temperature"
-            },
-            "wind_direction_custom": {
-                "name": "{name} wind direction"
-            },
-            "wind_direction_text_custom": {
-                "name": "{name} wind direction"
-            },
-            "wind_speed_custom": {
-                "name": "{name} wind speed"
-            }
-        },
-        "switch": {
-            "output_custom": {
-                "name": "Output {name}"
-            }
-        }
+    "create_entry": {
+      "default": "The device has been successfully configured.",
+      "web_mode_success": "The device was successfully switched to WEB mode. Please wait 10 seconds while the device restarts."
     },
-    "exceptions": {
-        "cannot_connect": {
-            "message": "Failed to connect to device {name} ({location})."
-        },
-        "command_failed": {
-            "message": "Failed to execute command {cmd} on {name}."
-        },
-        "invalid_auth": {
-            "message": "Invalid password of device {name} ({location})"
-        },
-        "unsupported_device": {
-            "message": "Device {name} ({location}) is unsupported."
-        }
+    "error": {
+      "cannot_connect": "Failed to connect to the device.",
+      "invalid_auth": "The password you provided is invalid, try a different one.",
+      "invalid_ip_format": "Invalid IPv4 address format."
     },
-    "options": {
-        "step": {
-            "init": {
-                "data": {
-                    "refresh_rate": "Scan interval (seconds)"
-                },
-                "data_description": {
-                    "refresh_rate": "How often Home Assistant should poll the device for new data."
-                }
-            }
-        }
+    "flow_title": "{name}",
+    "step": {
+      "discovery_confirm": {
+        "data": {
+          "password": "Password (optional)",
+          "refresh_rate": "Scan Interval (seconds)",
+          "web_port": "HTTP Port"
+        },
+        "data_description": {
+          "password": "Leave blank if your device does not require authentication.",
+          "refresh_rate": "How often Home Assistant should poll the device for new data.",
+          "web_port": "The HTTP port of the device. Default is 80."
+        },
+        "description": "Do you want to add {name} to Home Assistant?",
+        "title": "Add {name}"
+      },
+      "manual": {
+        "data": {
+          "ip_address": "IPv4 address",
+          "password": "Password (optional)",
+          "refresh_rate": "Scan interval (seconds)",
+          "web_port": "HTTP Port"
+        },
+        "data_description": {
+          "ip_address": "Enter the IPv4 address of your device.",
+          "password": "Leave blank if your device does not require authentication.",
+          "refresh_rate": "How often Home Assistant should poll the device for new data.",
+          "web_port": "The HTTP port of the device. Default is 80."
+        },
+        "title": "Manual Setup"
+      },
+      "network": {
+        "data": {
+          "ip_address": "IPv4 address",
+          "password": "Password (optional)",
+          "refresh_rate": "Scan interval (seconds)",
+          "web_port": "HTTP Port"
+        },
+        "data_description": {
+          "ip_address": "Select a discovered device or choose manual entry.",
+          "password": "Leave blank if your device does not require authentication.",
+          "refresh_rate": "How often Home Assistant should poll the device for new data.",
+          "web_port": "The HTTP port of the device. Default is 80."
+        },
+        "title": "Add a new network device"
+      },
+      "reauth_confirm": {
+        "data": {
+          "password": "New Password"
+        },
+        "data_description": {
+          "password": "Enter a new admin password of the device."
+        },
+        "description": "The password for your device **{name}** is no longer valid. Please enter the new password.",
+        "title": "Reauthenticate {name}"
+      },
+      "reconfigure": {
+        "data": {
+          "ip_address": "IPv4 Address",
+          "password": "Password (optional)",
+          "web_port": "HTTP Port"
+        },
+        "data_description": {
+          "ip_address": "Enter a new IPv4 address of your device.",
+          "password": "Enter a new admin password of the device (Optional).",
+          "web_port": "Enter the HTTP port of the device."
+        },
+        "description": "Update the connection details for your device.",
+        "title": "Reconfigure {name}"
+      },
+      "serial": {
+        "data": {
+          "baudrate": "Baudrate",
+          "port": "Port",
+          "refresh_rate": "Scan interval (seconds)"
+        },
+        "data_description": {
+          "baudrate": "Communication speed (baudrate) for the serial port.",
+          "port": "Select the serial port.",
+          "refresh_rate": "How often Home Assistant should poll the device for new data."
+        },
+        "title": "Add a new serial hub"
+      },
+      "serial_manual": {
+        "data": {
+          "baudrate": "Baudrate",
+          "port": "Port path",
+          "refresh_rate": "Scan interval (seconds)"
+        },
+        "data_description": {
+          "baudrate": "Communication speed (baudrate) for the serial port.",
+          "port": "Serial port path (e.g. /dev/ttyUSB0 or COM1).",
+          "refresh_rate": "How often Home Assistant should poll the device for new data."
+        },
+        "title": "Add a manual serial hub"
+      },
+      "user": {
+        "data": {
+          "connection_type": "Connection Type"
+        },
+        "data_description": {
+          "connection_type": "Choose whether you want to connect a network or create a new serial hub."
+        },
+        "title": "Select Connection Type"
+      },
+      "web_mode": {
+        "description": "The device is currently not in web mode. Do you want to switch it to web mode?",
+        "menu_options": {
+          "abort_switch": "Cancel",
+          "execute_switch": "Change mode to WEB"
+        },
+        "title": "Enable Web Mode"
+      }
     }
+  },
+  "entity": {
+    "binary_sensor": {
+      "input_custom": {
+        "name": "Input {name}"
+      }
+    },
+    "button": {
+      "connect_all_coils": {
+        "name": "Connect all relays"
+      },
+      "disconnect_all_coils": {
+        "name": "Disconnect all relays"
+      },
+      "reset_all_counters": {
+        "name": "Reset all counters"
+      },
+      "set_sensor": {
+        "name": "Set sensor automatically"
+      },
+      "set_sensor_custom": {
+        "name": "Set {name} automatically"
+      }
+    },
+    "number": {
+      "decrease_counter_custom": {
+        "name": "Decrease counter {name} by:"
+      },
+      "output_off_duration_custom": {
+        "name": "Output {name} off for duration (s)"
+      },
+      "output_on_duration_custom": {
+        "name": "Output {name} on for duration (s)"
+      },
+      "set_counter_custom": {
+        "name": "Set counter {name} on:"
+      }
+    },
+    "select": {
+      "counter_mode_custom": {
+        "name": "Counter {name} mode",
+        "state": {
+          "counts_ascending_and_descending_edges": "Counts ascending and descending edges",
+          "counts_ascending_edges": "Counts ascending edges",
+          "counts_descending_edges": "Counts descending edges",
+          "off": "Off"
+        }
+      },
+      "sensor_type": {
+        "name": "Sensor type",
+        "state": {
+          "temperature_ds": "Temperature (DS)",
+          "temperature_humidity_th15": "Temperature / Humidity (TH15)",
+          "temperature_humidity_th3x": "Temperature / Humidity (TH3x)",
+          "temperature_tmp": "Temperature (TMP)",
+          "unused": "Unused"
+        }
+      },
+      "sensor_type_custom": {
+        "name": "{name} type",
+        "state": {
+          "temperature_ds": "Temperature (DS)",
+          "temperature_humidity_th15": "Temperature / Humidity (TH15)",
+          "temperature_humidity_th3x": "Temperature / Humidity (TH3x)",
+          "temperature_tmp": "Temperature (TMP)",
+          "unused": "Unused"
+        }
+      },
+      "sensor_type_meteo_ab_custom": {
+        "name": "{name} type",
+        "state": {
+          "atmospheric_pressure": "Atmospheric pressure",
+          "co2_concentration_sd4x": "CO2 concentration (SCD4x)",
+          "co2_concentration_t6713": "CO2 concentration (T6713)",
+          "rain_gauge": "Rain gauge",
+          "temperature_ds": "Temperature (DS)",
+          "temperature_humidity_th3x": "Temperature / Humidity (TH3x)",
+          "temperature_tmp": "Temperature (TMP)",
+          "unused": "Unused"
+        }
+      },
+      "sensor_type_meteo_c_custom": {
+        "name": "{name} type",
+        "state": {
+          "davis": "Davis",
+          "unused": "Unused"
+        }
+      }
+    },
+    "sensor": {
+      "batt_custom": {
+        "name": "{name} battery"
+      },
+      "co2_custom": {
+        "name": "{name} CO2"
+      },
+      "counter_custom": {
+        "name": "Counter {name}"
+      },
+      "dew_point": {
+        "name": "Dew point"
+      },
+      "dew_point_custom": {
+        "name": "{name} dew point"
+      },
+      "humidity_custom": {
+        "name": "{name} humidity"
+      },
+      "precipitation_intensity_custom": {
+        "name": "{name} precipitation intensity"
+      },
+      "pressure_custom": {
+        "name": "{name} pressure"
+      },
+      "rain_custom": {
+        "name": "{name} rainfall"
+      },
+      "rssi_custom": {
+        "name": "{name} signal strength"
+      },
+      "temperature_custom": {
+        "name": "{name} temperature"
+      },
+      "wind_direction_custom": {
+        "name": "{name} wind direction"
+      },
+      "wind_direction_text_custom": {
+        "name": "{name} wind direction"
+      },
+      "wind_speed_custom": {
+        "name": "{name} wind speed"
+      }
+    },
+    "switch": {
+      "output_custom": {
+        "name": "Output {name}"
+      }
+    }
+  },
+  "exceptions": {
+    "cannot_connect": {
+      "message": "Failed to connect to device {name} ({location})."
+    },
+    "command_failed": {
+      "message": "Failed to execute command {cmd} on {name}."
+    },
+    "invalid_auth": {
+      "message": "Invalid password of device {name} ({location})"
+    },
+    "unable_open_port": {
+      "message": "Unable to open {port}."
+    },
+    "unsupported_device": {
+      "message": "Device {name} ({location}) is unsupported."
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "data": {
+          "refresh_rate": "Scan interval (seconds)"
+        },
+        "data_description": {
+          "refresh_rate": "How often Home Assistant should poll the device for new data."
+        }
+      }
+    }
+  }
 }

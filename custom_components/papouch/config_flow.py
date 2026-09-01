@@ -7,19 +7,21 @@ import re
 from typing import TYPE_CHECKING, Any, override
 
 import aiohttp
-import voluptuous as vol
-from aiopapouch import PapouchHTTPClient, create_device, is_device_supported
+from aiopapouch import PapouchHTTPClient, create_network_device, is_device_supported
 from aiopapouch.exceptions import (
     DeviceAuthError,
     DeviceConnectionError,
     DeviceLogicError,
 )
+import serial.tools.list_ports
+import voluptuous as vol
+
 from homeassistant.config_entries import ConfigFlow, ConfigFlowResult, OptionsFlow
 from homeassistant.core import callback
 from homeassistant.helpers.aiohttp_client import async_get_clientsession
 from homeassistant.helpers.device_registry import format_mac
 
-from .const import DEFAULT_SCAN_INTERVAL, DEFAULT_WEB_PORT, DOMAIN
+from .const import DEFAULT_BAUDRATE, DEFAULT_SCAN_INTERVAL, DEFAULT_WEB_PORT, DOMAIN
 from .discovery import async_discover_papouch_devices
 from .utils import _get_device_name
 
@@ -194,7 +196,7 @@ class PapouchConfigFlow(ConfigFlow, domain=DOMAIN):
             _LOGGER.exception("Failed to fetch device info after DHCP")
             return self.async_abort(reason="cannot_connect")
 
-        if not is_device_supported(device_name):
+        if not is_device_supported(device_name, "network"):
             return self.async_abort(reason="unsupported_device")
 
         title_name = f"{device_name} ({device_location})"
@@ -219,15 +221,17 @@ class PapouchConfigFlow(ConfigFlow, domain=DOMAIN):
             if result:
                 return result
 
-        schema = vol.Schema({
-            vol.Required("refresh_rate", default=DEFAULT_SCAN_INTERVAL): vol.All(
-                int, vol.Range(min=1, max=3600)
-            ),
-            vol.Optional("web_port", default=DEFAULT_WEB_PORT): vol.All(
-                int, vol.Range(min=1, max=65536)
-            ),
-            vol.Optional("password"): str,
-        })
+        schema = vol.Schema(
+            {
+                vol.Required("refresh_rate", default=DEFAULT_SCAN_INTERVAL): vol.All(
+                    int, vol.Range(min=1, max=3600)
+                ),
+                vol.Optional("web_port", default=DEFAULT_WEB_PORT): vol.All(
+                    int, vol.Range(min=1, max=65536)
+                ),
+                vol.Optional("password"): str,
+            }
+        )
 
         return self.async_show_form(
             step_id="discovery_confirm",
@@ -240,7 +244,31 @@ class PapouchConfigFlow(ConfigFlow, domain=DOMAIN):
     async def async_step_user(
         self, user_input: dict[str, Any] | None = None
     ) -> ConfigFlowResult:
-        """Handle the initial step featuring active UDP discovery."""
+        """Handle the initial step to choose between network or serial hub."""
+        if user_input is not None:
+            connection_type = user_input.get("connection_type")
+            if connection_type == "network":
+                return await self.async_step_network()
+            if connection_type == "serial":
+                return await self.async_step_serial()
+
+        schema = vol.Schema(
+            {
+                vol.Required("connection_type", default="network"): vol.In(
+                    {
+                        "network": "Network device",
+                        "serial": "Serial hub",
+                    }
+                )
+            }
+        )
+
+        return self.async_show_form(step_id="user", data_schema=schema)
+
+    async def async_step_network(
+        self, user_input: dict[str, Any] | None = None
+    ) -> ConfigFlowResult:
+        """Handle the network device setup featuring active UDP discovery."""
         errors: dict[str, str] = {}
 
         if user_input is not None:
@@ -293,18 +321,138 @@ class PapouchConfigFlow(ConfigFlow, domain=DOMAIN):
         if user_input and "web_port" in user_input:
             default_web_port = user_input["web_port"]
 
-        schema = vol.Schema({
-            vol.Required("ip_address"): vol.In(options),
-            vol.Required("refresh_rate", default=default_interval): vol.All(
-                int, vol.Range(min=1, max=3600)
-            ),
-            vol.Optional("web_port", default=default_web_port): vol.All(
-                int, vol.Range(min=1, max=65536)
-            ),
-            vol.Optional("password"): str,
-        })
+        schema = vol.Schema(
+            {
+                vol.Required("ip_address"): vol.In(options),
+                vol.Required("refresh_rate", default=default_interval): vol.All(
+                    int, vol.Range(min=1, max=3600)
+                ),
+                vol.Optional("web_port", default=default_web_port): vol.All(
+                    int, vol.Range(min=1, max=65536)
+                ),
+                vol.Optional("password"): str,
+            }
+        )
 
-        return self.async_show_form(step_id="user", data_schema=schema, errors=errors)
+        return self.async_show_form(
+            step_id="network", data_schema=schema, errors=errors
+        )
+
+    async def async_step_serial(
+        self, user_input: dict[str, Any] | None = None
+    ) -> ConfigFlowResult:
+        """Handle the serial hub configuration step."""
+        errors: dict[str, str] = {}
+
+        if user_input is not None:
+            port = user_input["port"]
+
+            if port == "manual":
+                self._saved_input = {
+                    "baudrate": user_input["baudrate"],
+                    "refresh_rate": user_input["refresh_rate"],
+                }
+                return await self.async_step_serial_manual()
+
+            baudrate = user_input["baudrate"]
+
+            await self.async_set_unique_id(port)
+            self._abort_if_unique_id_configured()
+
+            data = {
+                "port": port,
+                "baudrate": baudrate,
+            }
+            options = {
+                "refresh_rate": user_input.get("refresh_rate", DEFAULT_SCAN_INTERVAL)
+            }
+
+            return self.async_create_entry(
+                title=f"Papouch - {port}",
+                data=data,
+                options=options,
+            )
+
+        ports = await self.hass.async_add_executor_job(serial.tools.list_ports.comports)
+
+        configured_ports = {
+            entry.data.get("port")
+            for entry in self._async_current_entries()
+            if entry.data.get("port")
+        }
+
+        list_of_ports = {}
+        for port_info in ports:
+            if port_info.device not in configured_ports:
+                description = port_info.description or "Unknown device"
+                list_of_ports[port_info.device] = f"{port_info.device} - {description}"
+
+        list_of_ports["manual"] = "Enter port manually"
+
+        if len(list_of_ports) == 1:
+            return await self.async_step_serial_manual()
+
+        schema = vol.Schema(
+            {
+                vol.Required("port"): vol.In(list_of_ports),
+                vol.Required("baudrate", default=DEFAULT_BAUDRATE): int,
+                vol.Required("refresh_rate", default=DEFAULT_SCAN_INTERVAL): vol.All(
+                    int, vol.Range(min=1, max=3600)
+                ),
+            }
+        )
+
+        return self.async_show_form(step_id="serial", data_schema=schema, errors=errors)
+
+    async def async_step_serial_manual(
+        self, user_input: dict[str, Any] | None = None
+    ) -> ConfigFlowResult:
+        """Handle manual serial port."""
+        errors: dict[str, str] = {}
+
+        if user_input is not None:
+            port = user_input["port"]
+            baudrate = user_input["baudrate"]
+
+            await self.async_set_unique_id(port)
+            self._abort_if_unique_id_configured()
+
+            data = {
+                "port": port,
+                "baudrate": baudrate,
+            }
+            options = {
+                "refresh_rate": user_input.get("refresh_rate", DEFAULT_SCAN_INTERVAL)
+            }
+
+            return self.async_create_entry(
+                title=f"Papouch - {port}",
+                data=data,
+                options=options,
+            )
+
+        default_baudrate = DEFAULT_BAUDRATE
+        default_refresh = DEFAULT_SCAN_INTERVAL
+
+        if self._saved_input:
+            default_baudrate = self._saved_input.get("baudrate", DEFAULT_BAUDRATE)
+            default_refresh = self._saved_input.get(
+                "refresh_rate", DEFAULT_SCAN_INTERVAL
+            )
+
+        schema = vol.Schema(
+            {
+                vol.Required("port", default="/dev/ttyUSB0"): str,
+                vol.Required("baudrate", default=default_baudrate): int,
+                vol.Required("refresh_rate", default=default_refresh): vol.All(
+                    int, vol.Range(min=1, max=3600)
+                ),
+            }
+        )
+
+        return self.async_show_form(
+            step_id="serial_manual", data_schema=schema, errors=errors
+        )
 
     async def async_step_manual(
         self, user_input: dict[str, Any] | None = None
@@ -330,16 +478,18 @@ class PapouchConfigFlow(ConfigFlow, domain=DOMAIN):
         if user_input and "web_port" in user_input:
             default_web_port = user_input["web_port"]
 
-        schema = vol.Schema({
-            vol.Required("ip_address", default=default_ip): str,
-            vol.Required("refresh_rate", default=default_interval): vol.All(
-                int, vol.Range(min=1, max=3600)
-            ),
-            vol.Optional("web_port", default=default_web_port): vol.All(
-                int, vol.Range(min=1, max=65536)
-            ),
-            vol.Optional("password"): str,
-        })
+        schema = vol.Schema(
+            {
+                vol.Required("ip_address", default=default_ip): str,
+                vol.Required("refresh_rate", default=default_interval): vol.All(
+                    int, vol.Range(min=1, max=3600)
+                ),
+                vol.Optional("web_port", default=default_web_port): vol.All(
+                    int, vol.Range(min=1, max=65536)
+                ),
+                vol.Optional("password"): str,
+            }
+        )
 
         return self.async_show_form(step_id="manual", data_schema=schema, errors=errors)
 
@@ -370,7 +520,7 @@ class PapouchConfigFlow(ConfigFlow, domain=DOMAIN):
         )
 
         try:
-            device = await create_device(client)
+            device = await create_network_device(client)
 
             if device is None:
                 return self.async_abort(reason="unsupported_device")
@@ -458,9 +608,11 @@ class PapouchConfigFlow(ConfigFlow, domain=DOMAIN):
 
         return self.async_show_form(
             step_id="reauth_confirm",
-            data_schema=vol.Schema({
-                vol.Optional("password"): str,
-            }),
+            data_schema=vol.Schema(
+                {
+                    vol.Optional("password"): str,
+                }
+            ),
             errors=errors,
             description_placeholders={
                 "ip_address": self._reauth_entry.data["ip_address"]
@@ -518,13 +670,15 @@ class PapouchConfigFlow(ConfigFlow, domain=DOMAIN):
         if user_input and "web_port" in user_input:
             default_web_port = user_input["web_port"]
 
-        schema = vol.Schema({
-            vol.Required("ip_address", default=entry.data["ip_address"]): str,
-            vol.Optional("password", default=entry.data.get("password", "")): str,
-            vol.Optional("web_port", default=default_web_port): vol.All(
-                int, vol.Range(min=1, max=65536)
-            ),
-        })
+        schema = vol.Schema(
+            {
+                vol.Required("ip_address", default=entry.data["ip_address"]): str,
+                vol.Optional("password", default=entry.data.get("password", "")): str,
+                vol.Optional("web_port", default=default_web_port): vol.All(
+                    int, vol.Range(min=1, max=65536)
+                ),
+            }
+        )
 
         return self.async_show_form(
             step_id="reconfigure",
@@ -557,10 +711,12 @@ class PapouchOptionsFlowHandler(OptionsFlow):
             "refresh_rate", DEFAULT_SCAN_INTERVAL
         )
 
-        schema = vol.Schema({
-            vol.Required("refresh_rate", default=current_refresh): vol.All(
-                int, vol.Range(min=1, max=3600)
-            ),
-        })
+        schema = vol.Schema(
+            {
+                vol.Required("refresh_rate", default=current_refresh): vol.All(
+                    int, vol.Range(min=1, max=3600)
+                ),
+            }
+        )
 
         return self.async_show_form(step_id="init", data_schema=schema)
