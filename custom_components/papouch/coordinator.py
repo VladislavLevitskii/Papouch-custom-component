@@ -1,20 +1,18 @@
 """Data update coordinator for the Papouch integration."""
 
-from datetime import timedelta
 import logging
+from datetime import timedelta
 from typing import TYPE_CHECKING, Any, override
 
 from aiopapouch.exceptions import DeviceAuthError, DeviceConnectionError
-from pap_spinel import SpinelTransportError
-
 from homeassistant.exceptions import ConfigEntryAuthFailed, ConfigEntryNotReady
 from homeassistant.helpers.update_coordinator import DataUpdateCoordinator
+from pap_spinel import SpinelTransportError
 
 from .const import DEFAULT_SCAN_INTERVAL, DOMAIN
 
 if TYPE_CHECKING:
     from aiopapouch import PapouchDevice, PapouchHTTPClient, PapouchSerialClient
-
     from homeassistant.config_entries import ConfigEntry
     from homeassistant.core import HomeAssistant
 
@@ -60,11 +58,11 @@ class PapouchNetworkDataUpdateCoordinator(PapouchBaseCoordinator):
         return [self.device]
 
     @override
-    async def _async_update_data(self) -> dict:
+    async def _async_update_data(self) -> dict[str, Any]:
         """Fetch data from the device."""
         try:
             fresh_data = await self.api_client.fetch_data()
-            return await self.device.parse_fresh_data(fresh_data)
+            parsed_data = await self.device.parse_fresh_data(fresh_data)
         except DeviceAuthError as err:
             raise ConfigEntryAuthFailed(
                 translation_domain=DOMAIN,
@@ -83,6 +81,8 @@ class PapouchNetworkDataUpdateCoordinator(PapouchBaseCoordinator):
                     "location": self.device.location,
                 },
             ) from err
+
+        return {self.device.identifier: parsed_data}
 
 
 class PapouchSerialDataUpdateCoordinator(PapouchBaseCoordinator):

@@ -17,12 +17,12 @@
     }
   ],
   "documentation": "https://github.com/VladislavLevitskii/Papouch-custom-component#readme",
-  "integration_type": "device",
+  "integration_type": "hub",
   "iot_class": "local_polling",
   "issue_tracker": "https://github.com/VladislavLevitskii/Papouch-custom-component/issues",
   "requirements": [
-    "aiopapouch==0.1.14",
-    "pap_spinel==0.0.3"
+    "aiopapouch==0.1.16",
+    "pap_spinel==0.1.1"
   ],
-  "version": "1.0.10"
+  "version": "1.1.0"
 }

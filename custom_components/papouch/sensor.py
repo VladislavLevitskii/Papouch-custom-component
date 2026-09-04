@@ -1,11 +1,10 @@
 """Sensor platform for the Papouch integration."""
 
-from dataclasses import dataclass
 import logging
+from dataclasses import dataclass
 from typing import cast, override
 
 from aiopapouch import PapouchDevice
-
 from homeassistant.components.sensor import (
     SensorDeviceClass,
     SensorEntity,
@@ -177,7 +176,10 @@ class PapouchSensor(PapouchEntity, SensorEntity):
     @override
     def native_value(self) -> float | int | None:
         """Return the state of the sensor."""
-        value = self.coordinator.data.get(self.entity_description.data_key, {}).get(
+
+        device_data = self.coordinator.data[self.device.identifier]
+
+        value = device_data.get(self.entity_description.data_key, {}).get(
             self.entity_description.value_key
         )
         return cast("float | int | None", value)
