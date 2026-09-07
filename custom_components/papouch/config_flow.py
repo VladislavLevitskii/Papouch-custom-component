@@ -31,6 +31,7 @@ from homeassistant.helpers.selector import (
     NumberSelectorConfig,
     NumberSelectorMode,
 )
+from pap_spinel import INST_INFO
 
 from .const import DEFAULT_BAUDRATE, DEFAULT_SCAN_INTERVAL, DEFAULT_WEB_PORT, DOMAIN
 from .coordinator import PapouchSerialDataUpdateCoordinator
@@ -844,14 +845,6 @@ class PapouchOptionsFlowHandler(OptionsFlow):
 
         return {}, device_name, serial_number
 
-    def _get_next_available_address(self) -> int | None:
-        """Find the next available address from 0 to 253."""
-        used_addresses = {device["address"] for device in self._devices}
-        for addr in range(254):
-            if addr not in used_addresses:
-                return addr
-        return None
-
     async def async_step_add_device_by_address(
         self, user_input: dict[str, Any] | None = None
     ) -> ConfigFlowResult:
@@ -905,6 +898,27 @@ class PapouchOptionsFlowHandler(OptionsFlow):
             step_id="add_device_by_address", data_schema=schema, errors=errors
         )
 
+    async def _get_next_available_address(self) -> int | None:
+        """Find the next available address from 0 to 253."""
+
+        used_addresses = {device["address"] for device in self._devices}
+        coordinator: PapouchSerialDataUpdateCoordinator = self.config_entry.runtime_data
+
+        # its better to start from higher addresses
+        for addr in range(250, -1, -1):
+            if addr in used_addresses:
+                continue
+
+            try:
+                # we don't want any other device to have a new address
+                await coordinator.api_client.write_command(
+                    addr, INST_INFO, context="", timeout=0.3
+                )
+            except DeviceConnectionError:
+                return addr
+
+        return None
+
     async def async_step_add_device_by_serial_number(
         self, user_input: dict[str, Any] | None = None
     ) -> ConfigFlowResult:
@@ -924,7 +938,7 @@ class PapouchOptionsFlowHandler(OptionsFlow):
                         errors["serial_number"] = "serial_already_used"
                         break
 
-            new_address = self._get_next_available_address()
+            new_address = await self._get_next_available_address()
             if new_address is None:
                 errors["base"] = "no_free_addresses"
 
@@ -933,10 +947,6 @@ class PapouchOptionsFlowHandler(OptionsFlow):
                     self.config_entry.runtime_data
                 )
                 try:
-                    await coordinator.api_client.get_man_data(
-                        0xFE, "Unknown device on broadcast (0xFE)"
-                    )
-
                     await coordinator.api_client.set_address(
                         new_address,
                         serial_number,
