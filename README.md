@@ -72,7 +72,7 @@ rm -rf Papouch-custom-component-main
 
 ## Supported devices
 
-Currently, only Ethernet devices in **WEB** mode are supported:
+Currently, Ethernet devices in **WEB** mode are supported:
 
 - **Quido ETH** (Input/output modules)
 - **TH2E** (Thermometers and environmental sensors)
@@ -84,24 +84,35 @@ Currently, only Ethernet devices in **WEB** mode are supported:
   - **2TH**
   - **TH 2DI DO**
 
-## Device discovery
+and serial devices (via RS485):
+
+- **Quido RS485**
+- **THT2**
+
+## Configuration
+
+After adding our integration you will be asked to choose whether you want to add a network device or add a serial hub.
+
+### Network device
+
+The first step of adding a network device is an active discovery using broadcast:
+
+#### Device discovery
 
 All supported Papouch devices feature DHCP discovery. Once the integration is active in your Home Assistant instance, devices sending DHCP requests will automatically appear in the **Discovered** section on the Integrations page. Selecting **Configure** will guide you through the setup process.
 
 > **Note:**
 > This will be active if DHCP is enabled in the device. Note that devices with an active password configured may fail or be skipped during automatic DHCP discovery because authentication is required.
 
-Active discovery is also triggered automatically when you manually add the integration via the user interface. It will scan your local network using UDP broadcasts and present a list of available, unregistered devices along with their names, locations, and IP addresses. However, if a device has a password set, it will not be displayed in the list of available devices during network scans.
+Active discovery is also triggered automatically when you manually add the integration via the user interface. It will scan your local network using UDP broadcasts and present a list of available, unregistered devices along with their names, locations, and IP addresses. However, if a device has a password set, it will not be displayed in the list of available devices during network scan.
 
 > **Note:**
 > If your Home Assistant instance is running in an isolated network environment (such as Windows Subsystem for Linux (WSL) or specific Docker network configurations) where UDP broadcasts cannot reach the container, automatic discovery will fail. In this case, you can simply select the option to enter the IP address manually during the configuration flow.
 
-If your device was not discovered automatically, you can complete the setup manually:
+If your device was not discovered automatically, you can complete the setup manually by entering the IP address:
 
-1. The setup flow will always begin with an active network scan.
-2. If the list of discovered devices is empty, or if you prefer not to select any of the automatically discovered devices, choose the option to enter the IP address manually.
-3. Enter the device's IP address, your preferred polling interval, HTTP port and the admin password (if set).
-4. In the final step, you can assign the device to an area and customize its name.
+1. Enter the device's IP address, your preferred polling interval, HTTP port and the admin password (if set).
+2. In the final step, you can assign the device to an area and customize its name.
 
 > **Note:**
 > If the device doesn't have any password set and you provide one in the setup, it will work; however, the reverse will fail if the device expects a password that is not provided.
@@ -112,9 +123,7 @@ If your device was not discovered automatically, you can complete the setup manu
 > **Note:**
 > The device must be powered on and reachable by Home Assistant during the initial setup. The integration cannot be configured with an offline IP address because it needs to fetch the hardware configuration data to create a valid instance.
 
-If you need to change your selection during the manual configuration, simply close the setup dialog and start the process again.
-
-## Reconfiguration
+#### Reconfiguration
 
 If your device's IP address or access password changes, you can update the integration settings without removing and re-adding the device:
 
@@ -125,12 +134,28 @@ If your device's IP address or access password changes, you can update the integ
 > **Note:**
 > The reconfiguration flow updates the connection credentials and IP address used by Home Assistant to communicate with the device. It does not modify the physical device's internal configuration (such as changing its IP address or password on the device itself).
 
-## Polling interval
+#### Polling interval
 
 After creating a configuration for a device, you can change its polling interval by:
 
 1. Navigate to **Settings** > **Devices & Services**.
 2. Click the cog icon right next to the three dots in your Papouch integration, enter a new polling interval, and click **Submit**.
+
+### Serial device
+
+When you choose to add a serial hub, you are asked to select a serial port, baudrate and scan interval. Note that if you can't see the port you want to communicate via, you can choose `Enter port manually` and don't forget to set proper permissions.
+
+#### Serial hub
+
+After successfully creating the hub you can manage it via Serial Hub Options (Cog near three dots). There you can add new devices, remove them or change the scan interval.
+
+##### Adding a device
+
+There you will be asked to add the device using its address (if you know it) or its serial number. Note that adding by serial number will change the device's address. Moreover the format of the serial number should be: 0123/4567.
+
+>**Note**: Home Assistant doesn't remember your previously configured devices. It means that if you change the address using its serial number and then delete device's configuration, the configuration of the different device will assign the SAME address to a different device.
+
+Adding a serial device doesn't show you the option to change its name and location, so you can do it by clicking on the `pen` icon.
 
 ## Diagnostics
 
@@ -142,7 +167,7 @@ This integration supports Home Assistant diagnostics, allowing you to export tec
 
 ## Using the device
 
-While the device's built-in web interface remains the primary place for core configuration, this integration exposes certain settings directly within Home Assistant for your convenience.
+While the ethernet device's built-in web interface remains the primary place for core configuration, this integration exposes certain settings directly within Home Assistant for your convenience.
 
 > **Important:**
 > If you change settings directly via the device's web interface, the integration will not automatically detect all of these changes. We highly recommend **reloading** the integration (Settings > Devices & Services > three dots > **Reload**) after making external changes to keep the states synchronized.
@@ -160,7 +185,7 @@ When adjusting a `number` entity using the up/down arrows in the Home Assistant 
 Select entities (such as counter modes or sensor types) are not continuously polled. If you change them directly on the device's web interface, Home Assistant will be unaware of the change until the integration is reloaded.
 
 > **Warning:**
-> Changing the operating mode via a `select` entity causes the physical device to restart. For this reason, it is strongly advised **not** to use these select entities in automations.
+> Changing the operating mode via a `select` entity causes the physical (Ethernet) device to restart. For this reason, it is strongly advised **not** to use these select entities in automations.
 
 #### Units of measurement
 
@@ -187,13 +212,22 @@ The official manual can be found in the downloads section of the [Quido product 
 
 ### TH2E
 
-The integration provides the following entities for TH2E devices:
+The integration provides the following entities for TH2E device:
 
 - **Button**: Triggers automatic configuration of the connected sensor type (triggers a restart).
 - **Select**: Allows manual selection and configuration of the connected sensor type.
 - **Sensor**: Provides environmental readings depending on the configured sensor type.
 
 For more details, see the official manual available in the downloads section of the [TH2E product page](https://papouch.com/th2e-ethernetovy-teplomer-s-vlhkomerem-p4825/?vid=2374).
+
+### THT2
+
+The integration provides the following entities for THT2 device:
+
+- **Sensor**: Provides environmental readings depending on the configured sensor type.
+
+For more details, see the official manual available in the downloads section of the [THT2 product page](https://papouch.com/tht2-vlhkomer-a-teplomer-s-rs485-elektronika-p2204/).
+
 
 ### TME / TME Multi / TME Radio
 
