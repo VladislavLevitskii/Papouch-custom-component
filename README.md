@@ -147,15 +147,25 @@ When you choose to add a serial hub, you are asked to select a serial port, baud
 
 #### Serial hub
 
-After successfully creating the hub you can manage it via Serial Hub Options (Cog near three dots). There you can add new devices, remove them or change the scan interval.
+After successfully creating the hub you can manage it via Serial Hub Options (a cog near the three dots). There you can add new devices, remove them or change the scan interval.
 
 ##### Adding a device
 
-There you will be asked to add the device using its address (if you know it) or its serial number. Note that adding by serial number will change the device's address. Moreover the format of the serial number should be: 0123/4567.
+There you will be asked to add the device using its address (if you know it) or its serial number. Note that adding by serial number will change the device's address. (From the address 250 and going lower). Moreover the format of the serial number should be: 0123/4567.
 
 >**Note**: Home Assistant doesn't remember your previously configured devices. It means that if you change the address using its serial number and then delete device's configuration, the configuration of the different device will assign the SAME address to a different device.
 
 Adding a serial device doesn't show you the option to change its name and location, so you can do it by clicking on the `pen` icon.
+
+#### Reconfiguration
+
+As in the network branch you can manage the settings of the serial hub.
+
+1. Go to **Settings** > **Devices & services**" and select the Papouch integration.
+2. Select the three dots menu, then select **Reconfigure**.
+3. You can update the serial port or baudrate if needed.
+
+>**Note**: This reconfiguration option updates the parameters while preserving the existing config entry and any user-defined names.
 
 ## Diagnostics
 
@@ -170,7 +180,7 @@ This integration supports Home Assistant diagnostics, allowing you to export tec
 While the ethernet device's built-in web interface remains the primary place for core configuration, this integration exposes certain settings directly within Home Assistant for your convenience.
 
 > **Important:**
-> If you change settings directly via the device's web interface, the integration will not automatically detect all of these changes. We highly recommend **reloading** the integration (Settings > Devices & Services > three dots > **Reload**) after making external changes to keep the states synchronized.
+> If you change settings directly via the device's web interface (if it has one), the integration will not automatically detect all of these changes. We highly recommend **reloading** the integration (Settings > Devices & Services > three dots > **Reload**) after making external changes to keep the states synchronized.
 
 ### Known limitations and nuances
 
@@ -305,4 +315,4 @@ To apply these hardware changes:
 2. Navigate to **Settings** > **Devices & Services**.
 3. Click the three dots next to your Papouch integration and select **Reload**.
 
-The integration will fetch the updated hardware layout and create the new entities. The old entity (e.g., the previous thermometer) will become `unavailable` and you can manually delete it from the Home Assistant entity registry. Thanks to MAC address identification, you will not lose any historical data for the sensors that remained untouched.
+The integration will fetch the updated hardware layout and create the new entities. The old entity (e.g., the previous thermometer) will become `unavailable` and you can manually delete it from the Home Assistant entity registry. Thanks to MAC address/Serial number identification, you will not lose any historical data for the sensors that remained untouched.

@@ -159,10 +159,10 @@
         "name": "Rozpojit všechna relé"
       },
       "reset_all_counters": {
-        "name": "Resetovat všechna počitadla"
+        "name": "Resetovat všechny čítače"
       },
       "set_sensor": {
-        "name": "Nastavit snímač automaticky"
+        "name": "Nastavit senzor automaticky"
       },
       "set_sensor_custom": {
         "name": "Nastavit {name} automaticky"
@@ -170,16 +170,16 @@
     },
     "number": {
       "decrease_counter_custom": {
-        "name": "Snížit počitadlo {name} o:"
+        "name": "Odečíst od {name}:"
       },
       "output_off_duration_custom": {
-        "name": "Doba vypnutí výstupu {name} (s)"
+        "name": "Rozepnout {name} na dobu: (s)"
       },
       "output_on_duration_custom": {
-        "name": "Doba zapnutí výstupu {name} (s)"
+        "name": "Sepnout {name} na dobu: (s)"
       },
       "set_counter_custom": {
-        "name": "Nastavit počitadlo {name} na:"
+        "name": "Nastavit {name} na:"
       }
     },
     "select": {
@@ -193,7 +193,7 @@
         }
       },
       "sensor_type": {
-        "name": "Typ snímače",
+        "name": "Typ sensoru",
         "state": {
           "temperature_ds": "Teplota (DS)",
           "temperature_humidity_th15": "Teplota / Vlhkost (TH15)",
@@ -241,7 +241,7 @@
         "name": "CO2 {name}"
       },
       "counter_custom": {
-        "name": "Počitadlo {name}"
+        "name": "Čítač {name}"
       },
       "dew_point": {
         "name": "Rosný bod"
@@ -330,7 +330,7 @@
         "data_description": {
           "serial_number": "Zadejte přesné sériové číslo včetně lomítka (např., 0123/4567)."
         },
-        "description": "VAROVÁNÍ: Zařízení dostane z rozsahu novou adresu. Během tohoto procesu zajistěte, aby bylo k sběrnici připojeno POUZE JEDNO zařízení. \n Pokud se k zařízení nemůžete připojit, možné důvody jsou: \n 1) Jiné sériové číslo \n 2) Jiná přenosová rychlost (baudrate) \n 3) Jiný port",
+        "description": "VAROVÁNÍ: Zařízení dostane z rozsahu novou adresu. \n Pokud se k zařízení nemůžete připojit, možné důvody jsou: \n 1) Jiné sériové číslo \n 2) Jiná přenosová rychlost (baudrate) \n 3) Jiný port",
         "title": "Přidat zařízení podle sériového čísla"
       },
       "add_device_menu": {
