@@ -7,7 +7,7 @@
       "reauth_successful": "Opětovné ověření bylo úspěšné",
       "reconfigure_successful": "Rekonfigurace zařízení byla úspěšná.",
       "unsupported_device": "Toto zařízení není podporováno.",
-      "web_mode_required": "Aby integrace fungovala, zařízení musí být v režimu web."
+      "web_mode_required": "Aby integrace fungovala, zařízení musí být v režimu WEB nebo TCP server."
     },
     "create_entry": {
       "default": "Zařízení bylo úspěšně nakonfigurováno.",
@@ -284,6 +284,12 @@
     }
   },
   "exceptions": {
+    "cannot_connect_http": {
+      "message": "Nepodařilo se připojit k zařízení {name} ({location}) pomoci HTTP."
+    },
+    "cannot_connect_tcp": {
+      "message": "Nepodařilo se připojit k zařízení {name} ({location}) pomoci TCP."
+    },
     "cannot_connect": {
       "message": "Nepodařilo se připojit k zařízení {name} ({location})."
     },
@@ -307,11 +313,12 @@
     "error": {
       "address_already_used": "Tato adresa se již používá jiným zařízením.",
       "cannot_connect": "Nelze se připojit k zařízení na zadané adrese.",
-      "cannot_connect_broadcast": "Nelze se připojit k zařízení pomocí broadcastu (ujistěte se, že je na lince POUZE JEDNO nenakonfigurované zařízení).",
+      "cannot_connect_broadcast": "Nelze se připojit k zařízení pomocí broadcastu.",
       "invalid_serial_format": "Neplatný formát. Sériové číslo musí obsahovat lomítko (např. 0123/4567).",
       "no_free_addresses": "V rozsahu adres nezůstaly žádné volné adresy (0-253).",
       "serial_already_used": "Toto sériové číslo se již používá.",
-      "unable_create_device": "Zařízení se nepodařilo vytvořit nebo se nepodařilo načíst sériové číslo."
+      "unable_create_device": "Zařízení se nepodařilo vytvořit nebo se nepodařilo načíst sériové číslo.",
+      "unsupported_device": "Toto zařízení není podporováno."
     },
     "step": {
       "add_device_by_address": {

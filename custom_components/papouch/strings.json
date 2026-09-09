@@ -7,7 +7,7 @@
       "reauth_successful": "Re-authentication was successful",
       "reconfigure_successful": "Device reconfiguration was successful.",
       "unsupported_device": "This device is unsupported.",
-      "web_mode_required": "The integration requires the device to be in web mode to function."
+      "web_mode_required": "The integration requires the device to be in WEB mode or TCP server to function."
     },
     "create_entry": {
       "default": "The device has been successfully configured.",
@@ -287,6 +287,12 @@
     "cannot_connect": {
       "message": "Failed to connect to device {name} ({location})."
     },
+    "cannot_connect_http": {
+      "message": "Failed to connect to device {name} ({location}) via HTTP."
+    },
+    "cannot_connect_tcp": {
+      "message": "Failed to connect to device {name} ({location}) via TCP."
+    },
     "command_failed": {
       "message": "Failed to execute command {cmd} on {name}."
     },
@@ -307,11 +313,12 @@
     "error": {
       "address_already_used": "This address is already in use by another device.",
       "cannot_connect": "Cannot connect to the device at the given address.",
-      "cannot_connect_broadcast": "Cannot connect to the device via broadcast (make sure only ONE unconfigured device is on the line).",
+      "cannot_connect_broadcast": "Cannot connect to the device via broadcast.",
       "invalid_serial_format": "Invalid format. The serial number must contain a slash (e.g. 0123/4567).",
       "no_free_addresses": "No free addresses left in the pool (0-253).",
       "serial_already_used": "This serial number is already in use.",
-      "unable_create_device": "Device couldn't be created or serial number couldn't be fetched."
+      "unable_create_device": "Device couldn't be created or serial number couldn't be fetched.",
+      "unsupported_device": "This device {device_name} is unsupported."
     },
     "step": {
       "add_device_by_address": {
@@ -330,7 +337,7 @@
         "data_description": {
           "serial_number": "Enter the exact serial number including the slash (e.g., 0123/4567)."
         },
-        "description": "WARNING: The device will get a new address from the pool.\n If you cannot connect the devices, there are possible reasons: \n 1) Different serial number \n 2) Different baudrate \n 3) Different port",
+        "description": "WARNING: The device will get a new address from the pool. \n If you cannot connect the devices, there are possible reasons: \n 1) Different serial number \n 2) Different baudrate \n 3) Different port",
         "title": "Add Device by Serial Number"
       },
       "add_device_menu": {
