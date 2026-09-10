@@ -25,7 +25,8 @@ You can skip the first and the second step if you already have HACS installed.
 
 1. Install HACS by following the official [guide](https://hacs.xyz/docs/use/).
 2. Restart Home Assistant and configure the HACS integration.
-3. Open the Home Assistant web interface and navigate to **HACS** > **Integrations**.
+3. Open the Home Assistant web interface and navigate to **HACS** in left side menu.
+     - If you don't have the button or HACS is missing, clear your browser cache / do a hard refresh (Ctrl+F5) or go directly to `http://your_ip:8123/hacs/dashboard`.
 4. Click the three dots in the top right corner and select **Custom repositories**.
 5. Enter this GitHub repository URL of the component into the **Repository** field: `https://github.com/VladislavLevitskii/Papouch-custom-component`
 6. Select **Integration** in the **Category** dropdown and click **Add**.
