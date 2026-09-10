@@ -233,12 +233,27 @@ For more details, see the official manual available in the downloads section of 
 
 ### THT2
 
-The integration provides the following entities for THT2 device:
+The integration provides the following entity for THT2 device:
 
-- **Sensor**: Provides environmental readings depending on the configured sensor type.
+- **Sensor**: Provides environmental readings (temperature, humidity and dew point).
 
 For more details, see the official manual available in the downloads section of the [THT2 product page](https://papouch.com/tht2-vlhkomer-a-teplomer-s-rs485-elektronika-p2204/).
 
+### TQS 4
+
+The integration provides the following entity for THT2 device:
+
+- **Sensor**: Provides environmental readings (temperature).
+
+For more details, see the official manual available in the downloads section of the [THT2 product page](https://papouch.com/tqs4-e-elektronika-teplomeru-s-rs485-p3623/).
+
+### THCO2
+
+The integration provides the following entity for THCO2 device:
+
+- **Sensor**: Provides environmental readings (CO2 level, temperature, humidity and dew point).
+
+For more details, see the official manual available in the downloads section of the [THT2 product page](https://papouch.com/thco2-senzor-koncentrace-co2-teplomer-a-vlhkomer-s-rs485-p5034/).
 
 ### TME / TME Multi / TME Radio
 
