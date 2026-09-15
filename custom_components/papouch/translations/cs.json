@@ -1,13 +1,14 @@
 {
   "config": {
     "abort": {
-      "already_configured": "Toto zařízení je již nakonfigurováno, můžete jej odstranit z integrace a nakonfigurovat znovu.",
+      "already_configured": "Toto zařízení je již nakonfigurováno, můžete jej z integrace smazat a nakonfigurovat znovu.",
       "cannot_connect": "Home Assistant se nemůže připojit k zařízení.",
-      "mode_is_missing": "Zařízení neposkytlo svůj aktuální režim",
-      "reauth_successful": "Opětovné ověření bylo úspěšné",
-      "reconfigure_successful": "Rekonfigurace zařízení byla úspěšná.",
+      "converter_different_mode": "Převodník je v jiném režimu, změňte prosím jeho režim na TCP server.",
+      "mode_is_missing": "Zařízení neposkytlo svůj aktuální režim.",
+      "reauth_successful": "Opětovné ověření bylo úspěšné.",
+      "reconfigure_successful": "Přenastavení zařízení bylo úspěšné.",
       "unsupported_device": "Toto zařízení není podporováno.",
-      "web_mode_required": "Aby integrace fungovala, zařízení musí být v režimu WEB nebo TCP server."
+      "web_mode_required": "Integrace vyžaduje, aby zařízení fungovalo v režimu WEB nebo jako TCP server."
     },
     "create_entry": {
       "default": "Zařízení bylo úspěšně nakonfigurováno.",
@@ -15,61 +16,97 @@
     },
     "error": {
       "cannot_connect": "Nepodařilo se připojit k zařízení.",
+      "device_empty_mode": "Zařízení neposkytlo svůj režim.",
       "invalid_auth": "Zadané heslo je neplatné, zkuste jiné.",
-      "invalid_ip_format": "Neplatný formát IPv4 adresy."
+      "invalid_ip_format": "Neplatný formát IPv4 adresy.",
+      "unsupported_converter": "Tento převodník není podporován. Zkontrolujte prosím, zda tato IP adresa patří převodníku a ne jinému zařízení."
     },
     "flow_title": "{name}",
     "step": {
       "discovery_confirm": {
         "data": {
           "password": "Heslo (volitelné)",
-          "refresh_rate": "Interval skenování (sekundy)",
-          "web_port": "HTTP port"
+          "refresh_rate": "Interval dotazování (sekundy)",
+          "web_port": "HTTP Port"
         },
         "data_description": {
           "password": "Ponechte prázdné, pokud vaše zařízení nevyžaduje ověření.",
-          "refresh_rate": "Jak často má Home Assistant dotazovat zařízení na nová data.",
+          "refresh_rate": "Jak často by měl Home Assistant zjišťovat nová data ze zařízení.",
           "web_port": "HTTP port zařízení. Výchozí je 80."
         },
-        "description": "Chcete přidat {name} do Home Assistantu?",
+        "description": "Chcete přidat {name} do Home Assistanta?",
         "title": "Přidat {name}"
       },
       "manual": {
         "data": {
           "ip_address": "IPv4 adresa",
           "password": "Heslo (volitelné)",
-          "refresh_rate": "Interval skenování (sekundy)",
-          "web_port": "HTTP port"
+          "refresh_rate": "Interval dotazování (sekundy)",
+          "web_port": "HTTP Port"
         },
         "data_description": {
           "ip_address": "Zadejte IPv4 adresu vašeho zařízení.",
           "password": "Ponechte prázdné, pokud vaše zařízení nevyžaduje ověření.",
-          "refresh_rate": "Jak často má Home Assistant dotazovat zařízení na nová data.",
+          "refresh_rate": "Jak často by měl Home Assistant zjišťovat nová data ze zařízení.",
           "web_port": "HTTP port zařízení. Výchozí je 80."
         },
-        "title": "Ruční nastavení"
+        "title": "Manuální nastavení"
       },
-      "network": {
+      "network_device": {
         "data": {
           "ip_address": "IPv4 adresa",
           "password": "Heslo (volitelné)",
-          "refresh_rate": "Interval skenování (sekundy)",
-          "web_port": "HTTP port"
+          "refresh_rate": "Interval dotazování (sekundy)",
+          "web_port": "HTTP Port"
         },
         "data_description": {
-          "ip_address": "Vyberte nalezené zařízení nebo zvolte ruční zadání.",
+          "ip_address": "Vyberte nalezené zařízení nebo zvolte manuální zadání.",
           "password": "Ponechte prázdné, pokud vaše zařízení nevyžaduje ověření.",
-          "refresh_rate": "Jak často má Home Assistant dotazovat zařízení na nová data.",
+          "refresh_rate": "Jak často by měl Home Assistant zjišťovat nová data ze zařízení.",
           "web_port": "HTTP port zařízení. Výchozí je 80."
         },
         "title": "Přidat nové síťové zařízení"
+      },
+      "network_hub": {
+        "data": {
+          "baudrate": "Přenosová rychlost (baudrate)",
+          "host": "IPv4 adresa",
+          "password": "Heslo (volitelné)",
+          "refresh_rate": "Interval dotazování (sekundy)",
+          "web_port": "HTTP Port"
+        },
+        "data_description": {
+          "baudrate": "Komunikační rychlost (baudrate) pro sériový port.",
+          "host": "Zadejte IPv4 adresu vašeho síťového hubu.",
+          "password": "Ponechte prázdné, pokud vaše zařízení nevyžaduje ověření.",
+          "refresh_rate": "Jak často by měl Home Assistant zjišťovat nová data ze zařízení.",
+          "web_port": "HTTP port zařízení. Výchozí je 80."
+        },
+        "title": "Přidat nový síťový hub"
+      },
+      "network_hub_manual": {
+        "data": {
+          "baudrate": "Přenosová rychlost (baudrate)",
+          "host": "IPv4 adresa",
+          "password": "Heslo (volitelné)",
+          "refresh_rate": "Interval dotazování (sekundy)",
+          "web_port": "HTTP Port"
+        },
+        "data_description": {
+          "baudrate": "Komunikační rychlost (baudrate) pro sériový port.",
+          "host": "Zadejte IPv4 adresu vašeho síťového hubu.",
+          "password": "Ponechte prázdné, pokud vaše zařízení nevyžaduje ověření.",
+          "refresh_rate": "Jak často by měl Home Assistant zjišťovat nová data ze zařízení.",
+          "web_port": "HTTP port zařízení. Výchozí je 80."
+        },
+        "title": "Přidat manuální síťový hub"
       },
       "reauth_confirm": {
         "data": {
           "password": "Nové heslo"
         },
         "data_description": {
-          "password": "Zadejte nové administrátorské heslo zařízení."
+          "password": "Zadejte nové heslo administrátora zařízení."
         },
         "description": "Heslo pro vaše zařízení **{name}** již není platné. Zadejte prosím nové heslo.",
         "title": "Znovu ověřit {name}"
@@ -78,70 +115,98 @@
         "data": {
           "ip_address": "IPv4 adresa",
           "password": "Heslo (volitelné)",
-          "web_port": "HTTP port"
+          "web_port": "HTTP Port"
         },
         "data_description": {
           "ip_address": "Zadejte novou IPv4 adresu vašeho zařízení.",
-          "password": "Zadejte nové administrátorské heslo zařízení (volitelné).",
+          "password": "Zadejte nové heslo administrátora zařízení (volitelné).",
           "web_port": "Zadejte HTTP port zařízení."
         },
-        "description": "Aktualizujte podrobnosti připojení pro vaše zařízení.",
-        "title": "Znovu nakonfigurovat {name}"
+        "description": "Aktualizujte podrobnosti o připojení pro vaše zařízení.",
+        "title": "Přenastavit {name}"
+      },
+      "reconfigure_network_hub": {
+        "data": {
+          "baudrate": "Přenosová rychlost (baudrate)",
+          "host": "IPv4 adresa",
+          "password": "Heslo (volitelné)",
+          "web_port": "HTTP Port"
+        },
+        "data_description": {
+          "baudrate": "Zadejte komunikační rychlost (baudrate).",
+          "host": "Zadejte novou IPv4 adresu vašeho síťového hubu.",
+          "password": "Zadejte nové heslo administrátora zařízení (volitelné).",
+          "web_port": "Zadejte HTTP port zařízení."
+        },
+        "description": "Aktualizujte podrobnosti o připojení pro váš síťový hub.",
+        "title": "Přenastavit {name}"
       },
       "reconfigure_serial": {
         "data": {
-          "baudrate": "Baudrate",
+          "baudrate": "Přenosová rychlost (baudrate)",
           "port": "Sériový port"
         },
         "data_description": {
           "baudrate": "Zadejte komunikační rychlost (baudrate).",
           "port": "Zadejte cestu k sériovému portu (např. /dev/ttyUSB0 nebo COM1)."
         },
-        "description": "Aktualizujte podrobnosti sériového připojení pro vaše zařízení.",
-        "title": "Znovu nakonfigurovat {name}"
+        "description": "Aktualizujte podrobnosti o sériovém připojení pro vaše zařízení.",
+        "title": "Přenastavit {name}"
       },
-      "serial": {
+      "reconfigure_serial_manual": {
         "data": {
-          "baudrate": "Baudrate",
+          "baudrate": "Přenosová rychlost (baudrate)",
+          "port": "Cesta k portu"
+        },
+        "data_description": {
+          "baudrate": "Zadejte komunikační rychlost (baudrate).",
+          "port": "Zadejte cestu k sériovému portu (např. /dev/ttyUSB0 nebo COM1)."
+        },
+        "description": "Manuálně aktualizujte podrobnosti o sériovém připojení pro vaše zařízení.",
+        "title": "Manuálně přenastavit {name}"
+      },
+      "serial_hub": {
+        "data": {
+          "baudrate": "Přenosová rychlost (baudrate)",
           "port": "Port",
-          "refresh_rate": "Interval skenování (sekundy)"
+          "refresh_rate": "Interval dotazování (sekundy)"
         },
         "data_description": {
           "baudrate": "Komunikační rychlost (baudrate) pro sériový port.",
           "port": "Vyberte sériový port.",
-          "refresh_rate": "Jak často má Home Assistant dotazovat zařízení na nová data."
+          "refresh_rate": "Jak často by měl Home Assistant zjišťovat nová data ze zařízení."
         },
         "title": "Přidat nový sériový hub"
       },
       "serial_manual": {
         "data": {
-          "baudrate": "Baudrate",
+          "baudrate": "Přenosová rychlost (baudrate)",
           "port": "Cesta k portu",
-          "refresh_rate": "Interval skenování (sekundy)"
+          "refresh_rate": "Interval dotazování (sekundy)"
         },
         "data_description": {
           "baudrate": "Komunikační rychlost (baudrate) pro sériový port.",
           "port": "Cesta k sériovému portu (např. /dev/ttyUSB0 nebo COM1).",
-          "refresh_rate": "Jak často má Home Assistant dotazovat zařízení na nová data."
+          "refresh_rate": "Jak často by měl Home Assistant zjišťovat nová data ze zařízení."
         },
-        "title": "Přidat sériový hub ručně"
+        "title": "Přidat manuální sériový hub"
       },
       "user": {
         "data": {
           "connection_type": "Typ připojení"
         },
         "data_description": {
-          "connection_type": "Zvolte, zda chcete připojit síťové zařízení, nebo vytvořit nový sériový hub."
+          "connection_type": "Vyberte, zda chcete připojit síťové zařízení, síťový hub nebo sériový hub."
         },
         "title": "Vyberte typ připojení"
       },
       "web_mode": {
-        "description": "Zařízení aktuálně není v režimu web. Chcete jej přepnout do režimu web?",
+        "description": "Zařízení momentálně není v režimu WEB. Chcete jej přepnout do režimu WEB?",
         "menu_options": {
           "abort_switch": "Zrušit",
           "execute_switch": "Změnit režim na WEB"
         },
-        "title": "Povolit režim Web"
+        "title": "Povolit režim WEB"
       }
     }
   },
@@ -156,10 +221,10 @@
         "name": "Sepnout všechna relé"
       },
       "disconnect_all_coils": {
-        "name": "Rozpojit všechna relé"
+        "name": "Rozepnout všechna relé"
       },
       "reset_all_counters": {
-        "name": "Resetovat všechny čítače"
+        "name": "Resetovat všechna počítadla"
       },
       "set_sensor": {
         "name": "Nastavit senzor automaticky"
@@ -170,21 +235,21 @@
     },
     "number": {
       "decrease_counter_custom": {
-        "name": "Odečíst od {name}:"
+        "name": "Snížit počítadlo {name} o:"
       },
       "output_off_duration_custom": {
-        "name": "Rozepnout {name} na dobu: (s)"
+        "name": "Doba vypnutí výstupu {name} (s)"
       },
       "output_on_duration_custom": {
-        "name": "Sepnout {name} na dobu: (s)"
+        "name": "Doba zapnutí výstupu {name} (s)"
       },
       "set_counter_custom": {
-        "name": "Nastavit {name} na:"
+        "name": "Nastavit počítadlo {name} na:"
       }
     },
     "select": {
       "counter_mode_custom": {
-        "name": "Režim počitadla {name}",
+        "name": "Režim počítadla {name}",
         "state": {
           "counts_ascending_and_descending_edges": "Počítá vzestupné a sestupné hrany",
           "counts_ascending_edges": "Počítá vzestupné hrany",
@@ -193,7 +258,7 @@
         }
       },
       "sensor_type": {
-        "name": "Typ sensoru",
+        "name": "Typ senzoru",
         "state": {
           "temperature_ds": "Teplota (DS)",
           "temperature_humidity_th15": "Teplota / Vlhkost (TH15)",
@@ -259,7 +324,7 @@
         "name": "Tlak {name}"
       },
       "rain_custom": {
-        "name": "Úhrn srážek {name}"
+        "name": "Srážky {name}"
       },
       "rssi_custom": {
         "name": "Síla signálu {name}"
@@ -284,26 +349,26 @@
     }
   },
   "exceptions": {
-    "cannot_connect_http": {
-      "message": "Nepodařilo se připojit k zařízení {name} ({location}) pomoci HTTP."
-    },
-    "cannot_connect_tcp": {
-      "message": "Nepodařilo se připojit k zařízení {name} ({location}) pomoci TCP."
-    },
     "cannot_connect": {
       "message": "Nepodařilo se připojit k zařízení {name} ({location})."
     },
+    "cannot_connect_http": {
+      "message": "Nepodařilo se připojit k zařízení {name} ({location}) přes HTTP."
+    },
+    "cannot_connect_tcp": {
+      "message": "Nepodařilo se připojit k zařízení {name} ({location}) přes TCP."
+    },
     "command_failed": {
-      "message": "Nepodařilo se provést příkaz {cmd} na zařízení {name}."
+      "message": "Nepodařilo se provést příkaz {cmd} na {name}."
     },
     "invalid_auth": {
-      "message": "Neplatné heslo zařízení {name} ({location})"
+      "message": "Neplatné heslo pro zařízení {name} ({location})."
     },
     "unable_create_device": {
       "message": "Zařízení se sériovým číslem {serial_number} se nepodařilo vytvořit."
     },
     "unable_open_port": {
-      "message": "Nelze otevřít {port}."
+      "message": "Nepodařilo se otevřít port {port}."
     },
     "unsupported_device": {
       "message": "Zařízení {name} ({location}) není podporováno."
@@ -311,14 +376,14 @@
   },
   "options": {
     "error": {
-      "address_already_used": "Tato adresa se již používá jiným zařízením.",
-      "cannot_connect": "Nelze se připojit k zařízení na zadané adrese.",
-      "cannot_connect_broadcast": "Nelze se připojit k zařízení pomocí broadcastu.",
+      "address_already_used": "Tato adresa je již používána jiným zařízením.",
+      "cannot_connect": "K zařízení na dané adrese se nelze připojit.",
+      "cannot_connect_broadcast": "K zařízení se nelze připojit přes broadcast.",
       "invalid_serial_format": "Neplatný formát. Sériové číslo musí obsahovat lomítko (např. 0123/4567).",
       "no_free_addresses": "V rozsahu adres nezůstaly žádné volné adresy (0-253).",
       "serial_already_used": "Toto sériové číslo se již používá.",
       "unable_create_device": "Zařízení se nepodařilo vytvořit nebo se nepodařilo načíst sériové číslo.",
-      "unsupported_device": "Toto zařízení není podporováno."
+      "unsupported_device": "Toto zařízení {device_name} není podporováno."
     },
     "step": {
       "add_device_by_address": {
@@ -335,7 +400,7 @@
           "serial_number": "Sériové číslo zařízení"
         },
         "data_description": {
-          "serial_number": "Zadejte přesné sériové číslo včetně lomítka (např., 0123/4567)."
+          "serial_number": "Zadejte přesné sériové číslo včetně lomítka (např. 0123/4567)."
         },
         "description": "VAROVÁNÍ: Zařízení dostane z rozsahu novou adresu. \n Pokud se k zařízení nemůžete připojit, možné důvody jsou: \n 1) Jiné sériové číslo \n 2) Jiná přenosová rychlost (baudrate) \n 3) Jiný port",
         "title": "Přidat zařízení podle sériového čísla"
@@ -350,35 +415,35 @@
       },
       "hub_settings": {
         "data": {
-          "refresh_rate": "Interval skenování (sekundy)"
+          "refresh_rate": "Interval dotazování (sekundy)"
         },
         "data_description": {
-          "refresh_rate": "Jak často má Home Assistant dotazovat zařízení na tomto hubu."
+          "refresh_rate": "Jak často by měl Home Assistant dotazovat zařízení na tomto hubu."
         },
         "title": "Nastavení hubu"
       },
       "init": {
         "data": {
-          "refresh_rate": "Interval skenování (sekundy)"
+          "refresh_rate": "Interval dotazování (sekundy)"
         },
         "data_description": {
-          "refresh_rate": "Jak často má Home Assistant dotazovat zařízení na nová data."
+          "refresh_rate": "Jak často by měl Home Assistant zjišťovat nová data ze zařízení."
         }
       },
       "remove_device": {
         "data": {
-          "device": "Vyberte zařízení k odstranění"
+          "device": "Vyberte zařízení k odebrání"
         },
         "data_description": {
-          "device": "Vyberte zařízení, které chcete odstranit z tohoto sériového hubu."
+          "device": "Vyberte zařízení, které chcete odebrat z tohoto sériového hubu."
         },
-        "title": "Odstranit zařízení"
+        "title": "Odebrat zařízení"
       },
       "serial_menu": {
         "menu_options": {
           "add_device_menu": "Přidat nové zařízení",
           "hub_settings": "Nastavení hubu",
-          "remove_device": "Odstranit zařízení"
+          "remove_device": "Odebrat zařízení"
         },
         "title": "Možnosti sériového hubu"
       }
