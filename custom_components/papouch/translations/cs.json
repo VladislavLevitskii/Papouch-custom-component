@@ -4,15 +4,17 @@
       "already_configured": "Toto zařízení je již nakonfigurováno, můžete jej z integrace smazat a nakonfigurovat znovu.",
       "cannot_connect": "Home Assistant se nemůže připojit k zařízení.",
       "converter_different_mode": "Převodník je v jiném režimu, změňte prosím jeho režim na TCP server.",
+      "invalid_response": "Neplatná odpověď ze zařízení, zkontrolujte logy pro více informací.",
       "mode_is_missing": "Zařízení neposkytlo svůj aktuální režim.",
       "reauth_successful": "Opětovné ověření bylo úspěšné.",
       "reconfigure_successful": "Přenastavení zařízení bylo úspěšné.",
+      "unreachable": "Tato chyba by neměla nastat. Nedosažitelný kód v konfiguračním procesu.",
       "unsupported_device": "Toto zařízení není podporováno.",
       "web_mode_required": "Integrace vyžaduje, aby zařízení fungovalo v režimu WEB nebo jako TCP server."
     },
     "create_entry": {
       "default": "Zařízení bylo úspěšně nakonfigurováno.",
-      "web_mode_success": "Zařízení bylo úspěšně přepnuto do režimu WEB. Počkejte prosím 10 sekund, než se zařízení restartuje."
+      "web_mode_success": "Zařízení bylo úspěšně přepnuto do režimu {mode}."
     },
     "error": {
       "cannot_connect": "Nepodařilo se připojit k zařízení.",
@@ -22,6 +24,9 @@
       "unsupported_converter": "Tento převodník není podporován. Zkontrolujte prosím, zda tato IP adresa patří převodníku a ne jinému zařízení."
     },
     "flow_title": "{name}",
+    "progress": {
+      "restarting_device": "Měním režim a restartuji zařízení. Prosím čekejte..."
+    },
     "step": {
       "discovery_confirm": {
         "data": {
@@ -36,6 +41,9 @@
         },
         "description": "Chcete přidat {name} do Home Assistanta?",
         "title": "Přidat {name}"
+      },
+      "execute_switch": {
+        "title": "Restartování zařízení"
       },
       "manual": {
         "data": {
@@ -201,12 +209,12 @@
         "title": "Vyberte typ připojení"
       },
       "web_mode": {
-        "description": "Zařízení momentálně není v režimu WEB. Chcete jej přepnout do režimu WEB?",
+        "description": "Zařízení momentálně není v režimu {mode}. Chcete jej přepnout do režimu {mode}? Upozorňujeme, že tato akce může trvat 15-30 sekund.",
         "menu_options": {
           "abort_switch": "Zrušit",
-          "execute_switch": "Změnit režim na WEB"
+          "execute_switch": "Změnit režim"
         },
-        "title": "Povolit režim WEB"
+        "title": "Nepodporovaný režim"
       }
     }
   },
@@ -375,8 +383,13 @@
     }
   },
   "options": {
+    "abort": {
+      "broadcast_already_configured_device": "Zařízení, které je jediné na sběrnici, je již nakonfigurováno.",
+      "bus_multiple_devices": "Na sběrnici je připojeno více zařízení."
+    },
     "error": {
       "address_already_used": "Tato adresa je již používána jiným zařízením.",
+      "assign_failed": "Zařízení po několika pokusech neodpovědělo. Ověřte prosím, že je sériové číslo správné, zařízení je zapnuté a připojené ke sběrnici.",
       "cannot_connect": "K zařízení na dané adrese se nelze připojit.",
       "cannot_connect_broadcast": "K zařízení se nelze připojit přes broadcast.",
       "invalid_serial_format": "Neplatný formát. Sériové číslo musí obsahovat lomítko (např. 0123/4567).",
@@ -409,9 +422,14 @@
         "description": "Jak chcete přidat nové zařízení?",
         "menu_options": {
           "add_device_by_address": "Podle adresy",
-          "add_device_by_serial_number": "Podle sériového čísla"
+          "add_device_by_serial_number": "Podle sériového čísla",
+          "add_device_via_broadcast": "Přes Broadcast"
         },
         "title": "Přidat zařízení"
+      },
+      "add_device_via_broadcast": {
+        "description": "VAROVÁNÍ: Uvědomte si, že použití broadcastu v případě, kdy je na sběrnici více zařízení, vede k chybám připojení.",
+        "title": "Přidat zařízení přes broadcast"
       },
       "hub_settings": {
         "data": {

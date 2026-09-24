@@ -1,9 +1,7 @@
 {
   "domain": "papouch",
   "name": "Papouch",
-  "codeowners": [
-    "@VladislavLevitskii"
-  ],
+  "codeowners": ["@VladislavLevitskii"],
   "config_flow": true,
   "dhcp": [
     {
@@ -16,13 +14,9 @@
       "macaddress": "049162*"
     }
   ],
-  "documentation": "https://github.com/VladislavLevitskii/Papouch-custom-component#readme",
+  "documentation": "https://www.home-assistant.io/integrations/papouch",
   "integration_type": "hub",
   "iot_class": "local_polling",
-  "issue_tracker": "https://github.com/VladislavLevitskii/Papouch-custom-component/issues",
-  "requirements": [
-    "aiopapouch==0.3.0",
-    "pap_spinel==0.1.2"
-  ],
-  "version": "1.3.0"
+  "quality_scale": "platinum",
+  "requirements": ["aiopapouch==0.4.1", "pap_spinel==0.1.2"]
 }

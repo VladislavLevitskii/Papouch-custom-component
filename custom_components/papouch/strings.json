@@ -4,15 +4,17 @@
       "already_configured": "This device is already configured, you can delete it from the integration and configure it again.",
       "cannot_connect": "Home Assistant can't connect to the device.",
       "converter_different_mode": "The converter is in different mode, please change its mode to TCP server.",
+      "invalid_response": "Invalid response from the device, check the logs for more information",
       "mode_is_missing": "The device didn't provide its current mode",
       "reauth_successful": "Re-authentication was successful",
       "reconfigure_successful": "Device reconfiguration was successful.",
+      "unreachable": "This error shouldn't be triggered. Unreachable code in config flow.",
       "unsupported_device": "This device is unsupported.",
       "web_mode_required": "The integration requires the device to be in WEB mode or TCP server to function."
     },
     "create_entry": {
       "default": "The device has been successfully configured.",
-      "web_mode_success": "The device was successfully switched to WEB mode. Please wait 10 seconds while the device restarts."
+      "web_mode_success": "The device was successfully switched to {mode} mode."
     },
     "error": {
       "cannot_connect": "Failed to connect to the device.",
@@ -22,6 +24,9 @@
       "unsupported_converter": "This converter is unsupported. Please check if this IP belongs to the converter and not some other device."
     },
     "flow_title": "{name}",
+    "progress": {
+      "restarting_device": "Changing the mode and restarting the device. Please wait..."
+    },
     "step": {
       "discovery_confirm": {
         "data": {
@@ -36,6 +41,9 @@
         },
         "description": "Do you want to add {name} to Home Assistant?",
         "title": "Add {name}"
+      },
+      "execute_switch": {
+        "title": "Restarting Device"
       },
       "manual": {
         "data": {
@@ -201,12 +209,12 @@
         "title": "Select Connection Type"
       },
       "web_mode": {
-        "description": "The device is currently not in web mode. Do you want to switch it to web mode?",
+        "description": "The device is currently not in {mode} mode. Do you want to switch it to {mode} mode? Please note that this action may take 15-30 seconds.",
         "menu_options": {
           "abort_switch": "Cancel",
-          "execute_switch": "Change mode to WEB"
+          "execute_switch": "Switch mode"
         },
-        "title": "Enable Web Mode"
+        "title": "Unsupported Mode"
       }
     }
   },
@@ -375,8 +383,13 @@
     }
   },
   "options": {
+    "abort": {
+      "broadcast_already_configured_device": "A device that is the only one on the bus is already configured.",
+      "bus_multiple_devices": "There are more devices connected to the bus."
+    },
     "error": {
       "address_already_used": "This address is already in use by another device.",
+      "assign_failed": "The device did not respond after multiple attempts. Please verify that the Serial Number is correct, the device is powered on, and connected to the bus.",
       "cannot_connect": "Cannot connect to the device at the given address.",
       "cannot_connect_broadcast": "Cannot connect to the device via broadcast.",
       "invalid_serial_format": "Invalid format. The serial number must contain a slash (e.g. 0123/4567).",
@@ -409,9 +422,14 @@
         "description": "How do you want to add the new device?",
         "menu_options": {
           "add_device_by_address": "By Address",
-          "add_device_by_serial_number": "By Serial Number"
+          "add_device_by_serial_number": "By Serial Number",
+          "add_device_via_broadcast": "Via Broadcast"
         },
         "title": "Add Device"
+      },
+      "add_device_via_broadcast": {
+        "description": "WARNING: Be aware that using broadcast while there are multiple devices on the bus leads to connection errors.",
+        "title": "Add Device via broadcast."
       },
       "hub_settings": {
         "data": {

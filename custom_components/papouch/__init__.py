@@ -11,14 +11,21 @@ from aiopapouch import (
     create_serial_device,
 )
 from aiopapouch.exceptions import DeviceConnectionError
+from pap_spinel import SerialTransport, SpinelTransportError, TcpTransport
+
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import Platform
 from homeassistant.exceptions import ConfigEntryAuthFailed, ConfigEntryNotReady
 from homeassistant.helpers import device_registry as dr
 from homeassistant.helpers.aiohttp_client import async_get_clientsession
-from pap_spinel import SerialTransport, SpinelClient, SpinelTransportError, TcpTransport
 
-from .const import DEFAULT_WEB_PORT, DOMAIN, UNKNOWN_LOCATION, UNKNOWN_NAME
+from .const import (
+    DEFAULT_WEB_PORT,
+    DOMAIN,
+    SERIAL_BROADCAST_ADDRESS,
+    UNKNOWN_LOCATION,
+    UNKNOWN_NAME,
+)
 from .coordinator import (
     PapouchBaseCoordinator,
     PapouchNetworkDataUpdateCoordinator,
@@ -84,18 +91,18 @@ async def _async_setup_network_entry(
             translation_placeholders={"name": safe_name, "location": safe_location},
         )
 
-    if entry.unique_id is None and device.identifier:
-        hass.config_entries.async_update_entry(entry, unique_id=device.identifier)
+    if entry.unique_id is None and device.conf.identifier:
+        hass.config_entries.async_update_entry(entry, unique_id=device.conf.identifier)
 
     device_registry = dr.async_get(hass)
     device_registry.async_get_or_create(
         config_entry_id=entry.entry_id,
-        connections={(dr.CONNECTION_NETWORK_MAC, device.identifier)},
-        identifiers={(DOMAIN, device.identifier)},
-        name=device.name,
-        manufacturer=device.manufacturer,
-        model=device.name,
-        suggested_area=device.location,
+        connections={(dr.CONNECTION_NETWORK_MAC, device.conf.identifier)},
+        identifiers={(DOMAIN, device.conf.identifier)},
+        name=device.conf.name,
+        manufacturer=device.conf.manufacturer,
+        model=device.conf.name,
+        suggested_area=device.conf.location,
     )
 
     return PapouchNetworkDataUpdateCoordinator(hass, api_client, entry, device)
@@ -122,32 +129,19 @@ def _async_cleanup_stale_devices(
                 break
 
 
-async def _async_setup_serial_entry(
-    hass: HomeAssistant, entry: PapouchConfigEntry
-) -> PapouchSerialDataUpdateCoordinator:
-    port = entry.data["port"]
-    baudrate = entry.data["baudrate"]
-    transport = SerialTransport(port, baudrate)
-
-    serial_client = PapouchSerialClient(SpinelClient(transport))
-
-    try:
-        await serial_client.open()
-    except SpinelTransportError as err:
-        raise ConfigEntryNotReady(
-            translation_domain=DOMAIN,
-            translation_key="unable_open_port",
-            translation_placeholders={"port": port},
-        ) from err
-
+async def _async_setup_hub_devices(
+    hass: HomeAssistant,
+    entry: PapouchConfigEntry,
+    serial_client: PapouchSerialClient,
+    connection_id: str,
+) -> list:
+    """Shared logic for setting up devices behind a hub (Serial or Network)."""
     devices_config = entry.options.get("devices", [])
-
     device_registry = dr.async_get(hass)
 
-    _async_cleanup_stale_devices(device_registry, entry, port)
+    _async_cleanup_stale_devices(device_registry, entry, connection_id)
 
     devices = []
-
     for dev_conf in devices_config:
         address = dev_conf["address"]
         serial_number = dev_conf["serial_number"]
@@ -164,26 +158,49 @@ async def _async_setup_serial_entry(
 
         if device:
             devices.append(device)
-
-            location_stripped = device.location.strip() if device.location else ""
+            location_stripped = (
+                device.conf.location.strip() if device.conf.location else ""
+            )
             device_location = location_stripped or UNKNOWN_LOCATION
 
             device_registry.async_get_or_create(
                 config_entry_id=entry.entry_id,
-                identifiers={(DOMAIN, device.identifier)},
-                name=f"{device.name} (Address {address})",
-                manufacturer=device.manufacturer,
-                model=device.name,
+                identifiers={(DOMAIN, device.conf.identifier)},
+                name=f"{device.conf.name} (Address {address})",
+                manufacturer=device.conf.manufacturer,
+                model=device.conf.name,
                 serial_number=serial_number,
                 suggested_area=device_location,
             )
-
         else:
             raise ConfigEntryNotReady(
                 translation_domain=DOMAIN,
                 translation_key="unsupported_device",
                 translation_placeholders={"name": name, "location": serial_number},
             )
+
+    return devices
+
+
+async def _async_setup_serial_entry(
+    hass: HomeAssistant, entry: PapouchConfigEntry
+) -> PapouchSerialDataUpdateCoordinator:
+    port = entry.data["port"]
+    baudrate = entry.data["baudrate"]
+    transport = SerialTransport(port, baudrate)
+
+    serial_client = PapouchSerialClient(transport)
+
+    try:
+        await serial_client.open()
+    except SpinelTransportError as err:
+        raise ConfigEntryNotReady(
+            translation_domain=DOMAIN,
+            translation_key="unable_open_port",
+            translation_placeholders={"port": port},
+        ) from err
+
+    devices = await _async_setup_hub_devices(hass, entry, serial_client, port)
 
     return PapouchSerialDataUpdateCoordinator(hass, serial_client, entry, devices)
 
@@ -194,7 +211,7 @@ async def _async_setup_tcp_entry(
     host = entry.data["host"]
     port = entry.data["port"]
 
-    serial_client = PapouchSerialClient(SpinelClient(TcpTransport(host, port)))
+    serial_client = PapouchSerialClient(TcpTransport(host, port))
 
     try:
         await serial_client.open()
@@ -206,7 +223,9 @@ async def _async_setup_tcp_entry(
         ) from err
 
     try:
-        device = await create_serial_device(serial_client, address=0xFE)
+        device = await create_serial_device(
+            serial_client, address=SERIAL_BROADCAST_ADDRESS
+        )
     except DeviceConnectionError as err:
         raise ConfigEntryNotReady(
             translation_domain=DOMAIN,
@@ -231,8 +250,8 @@ async def _async_setup_tcp_entry(
             translation_domain=DOMAIN,
             translation_key="cannot_connect_http",
             translation_placeholders={
-                "name": device.name,
-                "location": device.location,
+                "name": device.conf.name,
+                "location": device.conf.location,
             },
         ) from err
 
@@ -243,10 +262,10 @@ async def _async_setup_tcp_entry(
         config_entry_id=entry.entry_id,
         connections={(dr.CONNECTION_NETWORK_MAC, mac_address)},
         identifiers={(DOMAIN, mac_address)},
-        name=device.name,
-        manufacturer=device.manufacturer,
-        model=device.name,
-        suggested_area=device.location or UNKNOWN_LOCATION,
+        name=device.conf.name,
+        manufacturer=device.conf.manufacturer,
+        model=device.conf.name,
+        suggested_area=device.conf.location or UNKNOWN_LOCATION,
     )
 
     return PapouchSerialDataUpdateCoordinator(hass, serial_client, entry, [device])
@@ -256,25 +275,10 @@ async def _async_setup_network_hub_entry(
     hass: HomeAssistant, entry: PapouchConfigEntry
 ) -> PapouchSerialDataUpdateCoordinator:
     host = entry.data["host"]
-    password = entry.data.get("password", "")
-    web_port = entry.data.get("web_port", DEFAULT_WEB_PORT)
-
-    session = async_get_clientsession(hass)
-    network_client = PapouchHTTPClient(
-        host, session, password=password, web_port=web_port
-    )
-
-    try:
-        tcp_port = await network_client.get_device_tcp_port()
-    except DeviceConnectionError as err:
-        raise ConfigEntryNotReady(
-            translation_domain=DOMAIN,
-            translation_key="cannot_connect_http",
-            translation_placeholders={"name": host, "location": "TCP Port fetch"},
-        ) from err
+    tcp_port = entry.data["tcp_port"]
 
     transport = TcpTransport(host, tcp_port)
-    serial_client = PapouchSerialClient(SpinelClient(transport))
+    serial_client = PapouchSerialClient(transport)
 
     try:
         await serial_client.open()
@@ -282,48 +286,13 @@ async def _async_setup_network_hub_entry(
         raise ConfigEntryNotReady(
             translation_domain=DOMAIN,
             translation_key="cannot_connect_tcp",
-            translation_placeholders={"name": host, "location": str(tcp_port)},
+            translation_placeholders={
+                "name": host,
+                "location": str(tcp_port),
+            },
         ) from err
 
-    devices_config = entry.options.get("devices", [])
-    device_registry = dr.async_get(hass)
-    _async_cleanup_stale_devices(device_registry, entry, host)
-
-    devices = []
-    for dev_conf in devices_config:
-        address = dev_conf["address"]
-        serial_number = dev_conf["serial_number"]
-        name = dev_conf["name"]
-
-        try:
-            device = await create_serial_device(serial_client, address)
-        except DeviceConnectionError as err:
-            raise ConfigEntryNotReady(
-                translation_domain=DOMAIN,
-                translation_key="unable_create_device",
-                translation_placeholders={"serial_number": serial_number},
-            ) from err
-
-        if device:
-            devices.append(device)
-            location_stripped = device.location.strip() if device.location else ""
-            device_location = location_stripped or UNKNOWN_LOCATION
-
-            device_registry.async_get_or_create(
-                config_entry_id=entry.entry_id,
-                identifiers={(DOMAIN, device.identifier)},
-                name=f"{device.name} (Address {address})",
-                manufacturer=device.manufacturer,
-                model=device.name,
-                serial_number=serial_number,
-                suggested_area=device_location,
-            )
-        else:
-            raise ConfigEntryNotReady(
-                translation_domain=DOMAIN,
-                translation_key="unsupported_device",
-                translation_placeholders={"name": name, "location": serial_number},
-            )
+    devices = await _async_setup_hub_devices(hass, entry, serial_client, host)
 
     return PapouchSerialDataUpdateCoordinator(hass, serial_client, entry, devices)
 
