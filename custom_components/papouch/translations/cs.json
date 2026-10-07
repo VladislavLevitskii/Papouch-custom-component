@@ -385,7 +385,7 @@
   "options": {
     "abort": {
       "broadcast_already_configured_device": "Zařízení, které je jediné na sběrnici, je již nakonfigurováno.",
-      "bus_multiple_devices": "Na sběrnici je připojeno více zařízení."
+      "bus_multiple_devices": "Na sběrnici je nepřipojeno žádné zařízení nebo více než 2."
     },
     "error": {
       "address_already_used": "Tato adresa je již používána jiným zařízením.",
@@ -448,6 +448,9 @@
           "refresh_rate": "Jak často by měl Home Assistant zjišťovat nová data ze zařízení."
         }
       },
+      "remove_all_devices": {
+        "title": "Remove Device"
+      },
       "remove_device": {
         "data": {
           "device": "Vyberte zařízení k odebrání"
@@ -461,6 +464,7 @@
         "menu_options": {
           "add_device_menu": "Přidat nové zařízení",
           "hub_settings": "Nastavení hubu",
+          "remove_all_devices": "Odebrat všechna zařízení",
           "remove_device": "Odebrat zařízení"
         },
         "title": "Možnosti sériového hubu"

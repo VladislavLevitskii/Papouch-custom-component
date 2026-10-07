@@ -6,7 +6,7 @@ from typing import Any
 
 from aiopapouch import is_device_supported
 from aiopapouch.exceptions import DeviceConnectionError
-from aiopapouch.utils import _get_device_details, assign_next_available_address
+from aiopapouch.utils import assign_next_available_address, get_device_details
 import voluptuous as vol
 
 from homeassistant.config_entries import ConfigFlowResult, OptionsFlow
@@ -64,6 +64,7 @@ class PapouchOptionsFlowHandler(OptionsFlow):
         menu_options = ["add_device_menu", "hub_settings"]
 
         if self._devices:
+            menu_options.insert(1, "remove_all_devices")
             menu_options.insert(1, "remove_device")
 
         return self.async_show_menu(
@@ -97,13 +98,18 @@ class PapouchOptionsFlowHandler(OptionsFlow):
         self, user_input: dict[str, Any] | None = None
     ) -> ConfigFlowResult:
         """Menu to choose how to add a serial device."""
+
+        menu_options = [
+            "add_device_by_address",
+            "add_device_by_serial_number",
+        ]
+
+        if not self._devices:
+            menu_options.append("add_device_via_broadcast")
+
         return self.async_show_menu(
             step_id="add_device_menu",
-            menu_options=[
-                "add_device_by_address",
-                "add_device_by_serial_number",
-                "add_device_via_broadcast",
-            ],
+            menu_options=menu_options,
         )
 
     async def async_step_add_device_by_address(
@@ -125,7 +131,7 @@ class PapouchOptionsFlowHandler(OptionsFlow):
 
             if not errors:
                 try:
-                    device_name, serial_number, _ = await _get_device_details(
+                    device_name, serial_number, _ = await get_device_details(
                         coordinator.api_client, address
                     )
                 except DeviceConnectionError:
@@ -256,7 +262,7 @@ class PapouchOptionsFlowHandler(OptionsFlow):
         coordinator: PapouchSerialDataUpdateCoordinator = self.config_entry.runtime_data
 
         try:
-            device_name, serial_number, new_address = await _get_device_details(
+            device_name, serial_number, new_address = await get_device_details(
                 coordinator.api_client, SERIAL_BROADCAST_ADDRESS
             )
         except DeviceConnectionError:
@@ -326,3 +332,21 @@ class PapouchOptionsFlowHandler(OptionsFlow):
         )
 
         return self.async_show_form(step_id="remove_device", data_schema=schema)
+
+    async def async_step_remove_all_devices(
+        self, user_input: dict[str, Any] | None = None
+    ) -> ConfigFlowResult:
+        """Remove all the devices from the hub."""
+        if not self._devices:
+            return await self.async_step_serial_menu()
+
+        new_options = {
+            **self.config_entry.options,
+            "devices": [],
+        }
+
+        self.hass.async_create_task(
+            self.hass.config_entries.async_reload(self.config_entry.entry_id)
+        )
+
+        return self.async_create_entry(title="", data=new_options)
