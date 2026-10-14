@@ -73,7 +73,7 @@ rm -rf Papouch-custom-component-main
 
 ## Supported devices
 
-Currently, Ethernet devices in **WEB** mode are supported:
+Currently, Ethernet devices in **WEB** and **TCP server** modes are supported:
 
 - **Quido ETH** (Input/output modules)
 - **TH2E** (Thermometers and environmental sensors)
@@ -89,10 +89,12 @@ and serial devices (via RS485):
 
 - **Quido RS485**
 - **THT2**
+- **TQS4**
+- **THCO2**
 
 ## Configuration
 
-After adding our integration you will be asked to choose whether you want to add a network device or add a serial hub.
+After adding our integration you will be asked to choose whether you want to add a network device, a network hub or a serial hub.
 
 ### Network device
 
@@ -152,7 +154,9 @@ After successfully creating the hub you can manage it via Serial Hub Options (a 
 
 ##### Adding a device
 
-There you will be asked to add the device using its address (if you know it) or its serial number. Note that adding by serial number will change the device's address. (From the address 250 and going lower). Moreover the format of the serial number should be: 0123/4567.
+There, you will be asked to add the device using its address (if you know it), its serial number, or via broadcast. Note that using broadcast requires having only one device connected to the bus.
+
+>**Note**: Adding using serial number will change the device's address. (From the address 250 and going lower). Moreover the format of the serial number should be: 0123/4567.
 
 >**Note**: Home Assistant doesn't remember your previously configured devices. It means that if you change the address using its serial number and then delete device's configuration, the configuration of the different device will assign the SAME address to a different device.
 
@@ -167,6 +171,10 @@ As in the network branch you can manage the settings of the serial hub.
 3. You can update the serial port or baudrate if needed.
 
 >**Note**: This reconfiguration option updates the parameters while preserving the existing config entry and any user-defined names.
+
+### Network hub
+
+A network hub represents converters that are connected using TCP and transmit incoming bytes directly to the bus. That's why the network hub option is similar to the serial hub, the only difference is that you need to select (or enter manually) an IP address instead of a port and enter HTTP port with the admin password. Other options like adding or removing the serial devices are completely the same. 
 
 ## Diagnostics
 
