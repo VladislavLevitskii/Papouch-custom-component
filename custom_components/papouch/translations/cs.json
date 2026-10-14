@@ -19,7 +19,7 @@
     "error": {
       "cannot_connect": "Nepodařilo se připojit k zařízení.",
       "device_empty_mode": "Zařízení neposkytlo svůj režim.",
-      "invalid_auth": "Zadané heslo je neplatné, zkuste jiné.",
+      "invalid_auth": "Zadané admin heslo je neplatné, zkuste jiné.",
       "invalid_ip_format": "Neplatný formát IPv4 adresy.",
       "unsupported_converter": "Tento převodník není podporován. Zkontrolujte prosím, zda tato IP adresa patří převodníku a ne jinému zařízení."
     },
@@ -30,7 +30,7 @@
     "step": {
       "discovery_confirm": {
         "data": {
-          "password": "Heslo (volitelné)",
+          "password": "Admin heslo (volitelné)",
           "refresh_rate": "Interval dotazování (sekundy)",
           "web_port": "HTTP Port"
         },
@@ -48,7 +48,7 @@
       "manual": {
         "data": {
           "ip_address": "IPv4 adresa",
-          "password": "Heslo (volitelné)",
+          "password": "Admin heslo (volitelné)",
           "refresh_rate": "Interval dotazování (sekundy)",
           "web_port": "HTTP Port"
         },
@@ -63,7 +63,7 @@
       "network_device": {
         "data": {
           "ip_address": "IPv4 adresa",
-          "password": "Heslo (volitelné)",
+          "password": "Admin heslo (volitelné)",
           "refresh_rate": "Interval dotazování (sekundy)",
           "web_port": "HTTP Port"
         },
@@ -79,7 +79,7 @@
         "data": {
           "baudrate": "Přenosová rychlost (baudrate)",
           "host": "IPv4 adresa",
-          "password": "Heslo (volitelné)",
+          "password": "Admin heslo (volitelné)",
           "refresh_rate": "Interval dotazování (sekundy)",
           "web_port": "HTTP Port"
         },
@@ -96,7 +96,7 @@
         "data": {
           "baudrate": "Přenosová rychlost (baudrate)",
           "host": "IPv4 adresa",
-          "password": "Heslo (volitelné)",
+          "password": "Admin heslo (volitelné)",
           "refresh_rate": "Interval dotazování (sekundy)",
           "web_port": "HTTP Port"
         },
@@ -111,23 +111,23 @@
       },
       "reauth_confirm": {
         "data": {
-          "password": "Nové heslo"
+          "password": "Nové admin heslo"
         },
         "data_description": {
-          "password": "Zadejte nové heslo administrátora zařízení."
+          "password": "Zadejte nové admin heslo administrátora zařízení."
         },
-        "description": "Heslo pro vaše zařízení **{name}** již není platné. Zadejte prosím nové heslo.",
+        "description": "Admin heslo pro vaše zařízení **{name}** již není platné. Zadejte prosím nové heslo.",
         "title": "Znovu ověřit {name}"
       },
       "reconfigure": {
         "data": {
           "ip_address": "IPv4 adresa",
-          "password": "Heslo (volitelné)",
+          "password": "Admin heslo (volitelné)",
           "web_port": "HTTP Port"
         },
         "data_description": {
           "ip_address": "Zadejte novou IPv4 adresu vašeho zařízení.",
-          "password": "Zadejte nové heslo administrátora zařízení (volitelné).",
+          "password": "Zadejte nové admin heslo administrátora zařízení (volitelné).",
           "web_port": "Zadejte HTTP port zařízení."
         },
         "description": "Aktualizujte podrobnosti o připojení pro vaše zařízení.",
@@ -137,13 +137,13 @@
         "data": {
           "baudrate": "Přenosová rychlost (baudrate)",
           "host": "IPv4 adresa",
-          "password": "Heslo (volitelné)",
+          "password": "Admin heslo (volitelné)",
           "web_port": "HTTP Port"
         },
         "data_description": {
           "baudrate": "Zadejte komunikační rychlost (baudrate).",
           "host": "Zadejte novou IPv4 adresu vašeho síťového hubu.",
-          "password": "Zadejte nové heslo administrátora zařízení (volitelné).",
+          "password": "Zadejte nové admin heslo administrátora zařízení (volitelné).",
           "web_port": "Zadejte HTTP port zařízení."
         },
         "description": "Aktualizujte podrobnosti o připojení pro váš síťový hub.",
@@ -370,7 +370,7 @@
       "message": "Nepodařilo se provést příkaz {cmd} na {name}."
     },
     "invalid_auth": {
-      "message": "Neplatné heslo pro zařízení {name} ({location})."
+      "message": "Neplatné admin heslo pro zařízení {name} ({location})."
     },
     "unable_create_device": {
       "message": "Zařízení se sériovým číslem {serial_number} se nepodařilo vytvořit."
