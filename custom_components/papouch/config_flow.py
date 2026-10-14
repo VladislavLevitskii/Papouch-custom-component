@@ -6,7 +6,8 @@ import logging
 import re
 from typing import TYPE_CHECKING, Any, override
 
-import aiohttp
+import serial.tools.list_ports
+import voluptuous as vol
 from aiopapouch import (
     PapouchHTTPClient,
     async_discover_papouch_devices,
@@ -18,10 +19,8 @@ from aiopapouch.exceptions import (
     DeviceAuthError,
     DeviceConnectionError,
     DeviceLogicError,
+    DeviceParseError,
 )
-import serial.tools.list_ports
-import voluptuous as vol
-
 from homeassistant.config_entries import ConfigFlow, ConfigFlowResult, OptionsFlow
 from homeassistant.core import callback
 from homeassistant.helpers.aiohttp_client import async_get_clientsession
@@ -81,11 +80,7 @@ class PapouchConfigFlow(ConfigFlow, domain=DOMAIN):
             mode_device = await client.get_device_mode()
         except DeviceAuthError:
             return {"base": "invalid_auth"}, None
-        except (
-            aiohttp.ClientError,
-            DeviceConnectionError,
-            TimeoutError,
-        ):
+        except DeviceConnectionError:
             _LOGGER.exception("Failed to connect to the device")
             return {"base": "cannot_connect"}, None
 
@@ -106,7 +101,7 @@ class PapouchConfigFlow(ConfigFlow, domain=DOMAIN):
             device_mode = await converter.get_mode()
             title = f"{converter.conf.context} - {converter.conf.identifier}"
 
-        except aiohttp.ClientError, DeviceConnectionError, TimeoutError:
+        except DeviceConnectionError, DeviceParseError:
             return {"base": "cannot_connect"}, None, None, None, None
 
         return (
@@ -276,7 +271,7 @@ class PapouchConfigFlow(ConfigFlow, domain=DOMAIN):
         try:
             await asyncio.sleep(DHCP_TIMEOUT)
             device_name, device_location = await client.get_device_info()
-        except aiohttp.ClientError:
+        except DeviceConnectionError:
             _LOGGER.exception("Failed to fetch device info after DHCP")
             return self.async_abort(reason="cannot_connect")
 
@@ -305,17 +300,15 @@ class PapouchConfigFlow(ConfigFlow, domain=DOMAIN):
             if result:
                 return result
 
-        schema = vol.Schema(
-            {
-                vol.Required("refresh_rate", default=DEFAULT_SCAN_INTERVAL): vol.All(
-                    int, vol.Range(min=1, max=3600)
-                ),
-                vol.Optional("web_port", default=DEFAULT_WEB_PORT): vol.All(
-                    int, vol.Range(min=1, max=65536)
-                ),
-                vol.Optional("password"): str,
-            }
-        )
+        schema = vol.Schema({
+            vol.Required("refresh_rate", default=DEFAULT_SCAN_INTERVAL): vol.All(
+                int, vol.Range(min=1, max=3600)
+            ),
+            vol.Optional("web_port", default=DEFAULT_WEB_PORT): vol.All(
+                int, vol.Range(min=1, max=65536)
+            ),
+            vol.Optional("password"): str,
+        })
 
         return self.async_show_form(
             step_id="discovery_confirm",
@@ -338,17 +331,13 @@ class PapouchConfigFlow(ConfigFlow, domain=DOMAIN):
             if connection_type == "serial_hub":
                 return await self.async_step_serial_hub()
 
-        schema = vol.Schema(
-            {
-                vol.Required("connection_type", default="network_device"): vol.In(
-                    {
-                        "network_device": "Network device",
-                        "network_hub": "Network hub",
-                        "serial_hub": "Serial hub",
-                    }
-                )
-            }
-        )
+        schema = vol.Schema({
+            vol.Required("connection_type", default="network_device"): vol.In({
+                "network_device": "Network device",
+                "network_hub": "Network hub",
+                "serial_hub": "Serial hub",
+            })
+        })
 
         return self.async_show_form(step_id="user", data_schema=schema)
 
@@ -460,15 +449,13 @@ class PapouchConfigFlow(ConfigFlow, domain=DOMAIN):
         if len(list_of_ports) == 1:
             return await self.async_step_serial_manual()
 
-        schema = vol.Schema(
-            {
-                vol.Required("port"): vol.In(list_of_ports),
-                vol.Required("baudrate", default=DEFAULT_BAUDRATE): int,
-                vol.Required("refresh_rate", default=DEFAULT_SCAN_INTERVAL): vol.All(
-                    int, vol.Range(min=1, max=3600)
-                ),
-            }
-        )
+        schema = vol.Schema({
+            vol.Required("port"): vol.In(list_of_ports),
+            vol.Required("baudrate", default=DEFAULT_BAUDRATE): int,
+            vol.Required("refresh_rate", default=DEFAULT_SCAN_INTERVAL): vol.All(
+                int, vol.Range(min=1, max=3600)
+            ),
+        })
 
         return self.async_show_form(
             step_id="serial_hub", data_schema=schema, errors=errors
@@ -550,17 +537,15 @@ class PapouchConfigFlow(ConfigFlow, domain=DOMAIN):
 
         default_host = list(options_dict.keys())[0] if options_dict else "manual"
 
-        schema = vol.Schema(
-            {
-                vol.Required("host", default=default_host): vol.In(options_dict),
-                vol.Required("baudrate", default=DEFAULT_BAUDRATE): int,
-                vol.Required("refresh_rate", default=DEFAULT_SCAN_INTERVAL): vol.All(
-                    int, vol.Range(min=1, max=3600)
-                ),
-                vol.Required("web_port", default=DEFAULT_WEB_PORT): int,
-                vol.Optional("password"): str,
-            }
-        )
+        schema = vol.Schema({
+            vol.Required("host", default=default_host): vol.In(options_dict),
+            vol.Required("baudrate", default=DEFAULT_BAUDRATE): int,
+            vol.Required("refresh_rate", default=DEFAULT_SCAN_INTERVAL): vol.All(
+                int, vol.Range(min=1, max=3600)
+            ),
+            vol.Required("web_port", default=DEFAULT_WEB_PORT): int,
+            vol.Optional("password"): str,
+        })
 
         return self.async_show_form(
             step_id="network_hub", data_schema=schema, errors=errors
@@ -608,17 +593,15 @@ class PapouchConfigFlow(ConfigFlow, domain=DOMAIN):
                     title=f"{title} - {host}", data=data, options=options
                 )
 
-        schema = vol.Schema(
-            {
-                vol.Required("host"): str,
-                vol.Required("baudrate", default=DEFAULT_BAUDRATE): int,
-                vol.Required("refresh_rate", default=DEFAULT_SCAN_INTERVAL): vol.All(
-                    int, vol.Range(min=1, max=3600)
-                ),
-                vol.Required("web_port", default=DEFAULT_WEB_PORT): int,
-                vol.Optional("password"): str,
-            }
-        )
+        schema = vol.Schema({
+            vol.Required("host"): str,
+            vol.Required("baudrate", default=DEFAULT_BAUDRATE): int,
+            vol.Required("refresh_rate", default=DEFAULT_SCAN_INTERVAL): vol.All(
+                int, vol.Range(min=1, max=3600)
+            ),
+            vol.Required("web_port", default=DEFAULT_WEB_PORT): int,
+            vol.Optional("password"): str,
+        })
 
         return self.async_show_form(
             step_id="network_hub_manual", data_schema=schema, errors=errors
@@ -661,15 +644,13 @@ class PapouchConfigFlow(ConfigFlow, domain=DOMAIN):
                 "refresh_rate", DEFAULT_SCAN_INTERVAL
             )
 
-        schema = vol.Schema(
-            {
-                vol.Required("port", default="/dev/ttyUSB0"): str,
-                vol.Required("baudrate", default=default_baudrate): int,
-                vol.Required("refresh_rate", default=default_refresh): vol.All(
-                    int, vol.Range(min=1, max=3600)
-                ),
-            }
-        )
+        schema = vol.Schema({
+            vol.Required("port", default="/dev/ttyUSB0"): str,
+            vol.Required("baudrate", default=default_baudrate): int,
+            vol.Required("refresh_rate", default=default_refresh): vol.All(
+                int, vol.Range(min=1, max=3600)
+            ),
+        })
 
         return self.async_show_form(
             step_id="serial_manual", data_schema=schema, errors=errors
@@ -751,11 +732,7 @@ class PapouchConfigFlow(ConfigFlow, domain=DOMAIN):
 
         try:
             title_name, data, unique_id = self._switch_task.result()
-        except (
-            aiohttp.ClientError,
-            DeviceConnectionError,
-            TimeoutError,
-        ) as err:
+        except DeviceConnectionError as err:
             _LOGGER.error("Connection error during switch: %s", err)
             return self.async_abort(reason="cannot_connect")
         except DeviceLogicError as err:
@@ -782,7 +759,11 @@ class PapouchConfigFlow(ConfigFlow, domain=DOMAIN):
         )
 
     async def _async_perform_switch(self) -> tuple[str, dict[str, Any], str]:
-        """Async task on background, switch to proper mode and return proper data."""
+        """Async task on background, switch to proper mode and return proper data.
+
+        This method raises DeviceError's children and they should be caught in.
+        """
+
         session = async_get_clientsession(self.hass)
 
         if self._saved_input is None:
@@ -833,11 +814,7 @@ class PapouchConfigFlow(ConfigFlow, domain=DOMAIN):
             await device.switch_to_web_mode()
 
             title_name = await _get_device_name(session, address, password, web_port)
-
-            try:
-                mac_address = await client.get_device_mac()
-            except aiohttp.ClientError as err:
-                raise DeviceConnectionError(err) from err
+            mac_address = await client.get_device_mac()
 
             formatted_mac = format_mac(mac_address)
             unique_id = formatted_mac
@@ -897,11 +874,9 @@ class PapouchConfigFlow(ConfigFlow, domain=DOMAIN):
 
         return self.async_show_form(
             step_id="reauth_confirm",
-            data_schema=vol.Schema(
-                {
-                    vol.Optional("password"): str,
-                }
-            ),
+            data_schema=vol.Schema({
+                vol.Optional("password"): str,
+            }),
             errors=errors,
             description_placeholders={
                 "ip_address": self._reauth_entry.data["ip_address"]
@@ -969,15 +944,13 @@ class PapouchConfigFlow(ConfigFlow, domain=DOMAIN):
         if user_input and "web_port" in user_input:
             default_web_port = user_input["web_port"]
 
-        schema = vol.Schema(
-            {
-                vol.Required("ip_address", default=entry.data["ip_address"]): str,
-                vol.Optional("password", default=entry.data.get("password", "")): str,
-                vol.Optional("web_port", default=default_web_port): vol.All(
-                    int, vol.Range(min=1, max=65536)
-                ),
-            }
-        )
+        schema = vol.Schema({
+            vol.Required("ip_address", default=entry.data["ip_address"]): str,
+            vol.Optional("password", default=entry.data.get("password", "")): str,
+            vol.Optional("web_port", default=default_web_port): vol.All(
+                int, vol.Range(min=1, max=65536)
+            ),
+        })
 
         return self.async_show_form(
             step_id="reconfigure",
@@ -1037,18 +1010,16 @@ class PapouchConfigFlow(ConfigFlow, domain=DOMAIN):
                 await self.hass.config_entries.async_reload(entry.entry_id)
                 return self.async_abort(reason="reconfigure_successful")
 
-        schema = vol.Schema(
-            {
-                vol.Required("host", default=entry.data.get("host")): str,
-                vol.Required(
-                    "baudrate", default=entry.data.get("baudrate", DEFAULT_BAUDRATE)
-                ): int,
-                vol.Required(
-                    "web_port", default=entry.data.get("web_port", DEFAULT_WEB_PORT)
-                ): int,
-                vol.Optional("password", default=entry.data.get("password", "")): str,
-            }
-        )
+        schema = vol.Schema({
+            vol.Required("host", default=entry.data.get("host")): str,
+            vol.Required(
+                "baudrate", default=entry.data.get("baudrate", DEFAULT_BAUDRATE)
+            ): int,
+            vol.Required(
+                "web_port", default=entry.data.get("web_port", DEFAULT_WEB_PORT)
+            ): int,
+            vol.Optional("password", default=entry.data.get("password", "")): str,
+        })
 
         return self.async_show_form(
             step_id="reconfigure_network_hub",
@@ -1102,14 +1073,12 @@ class PapouchConfigFlow(ConfigFlow, domain=DOMAIN):
         if current_port not in list_of_ports:
             list_of_ports[current_port] = f"{current_port} - Current port"
 
-        schema = vol.Schema(
-            {
-                vol.Required("port", default=current_port): vol.In(list_of_ports),
-                vol.Required(
-                    "baudrate", default=entry.data.get("baudrate", DEFAULT_BAUDRATE)
-                ): int,
-            }
-        )
+        schema = vol.Schema({
+            vol.Required("port", default=current_port): vol.In(list_of_ports),
+            vol.Required(
+                "baudrate", default=entry.data.get("baudrate", DEFAULT_BAUDRATE)
+            ): int,
+        })
 
         return self.async_show_form(
             step_id="reconfigure_serial",
@@ -1152,14 +1121,10 @@ class PapouchConfigFlow(ConfigFlow, domain=DOMAIN):
         if self._saved_input:
             default_baudrate = self._saved_input.get("baudrate", default_baudrate)
 
-        schema = vol.Schema(
-            {
-                vol.Required(
-                    "port", default=entry.data.get("port", "/dev/ttyUSB0")
-                ): str,
-                vol.Required("baudrate", default=default_baudrate): int,
-            }
-        )
+        schema = vol.Schema({
+            vol.Required("port", default=entry.data.get("port", "/dev/ttyUSB0")): str,
+            vol.Required("baudrate", default=default_baudrate): int,
+        })
 
         return self.async_show_form(
             step_id="reconfigure_serial_manual",
