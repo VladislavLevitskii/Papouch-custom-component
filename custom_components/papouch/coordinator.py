@@ -1,16 +1,15 @@
 """Data update coordinator for the Papouch integration."""
 
+import logging
 from abc import ABC, abstractmethod
 from collections.abc import Sequence
 from datetime import timedelta
-import logging
 from typing import TYPE_CHECKING, Any, override
 
 from aiopapouch.exceptions import DeviceAuthError, DeviceConnectionError
-from pap_spinel import SpinelTransportError
-
 from homeassistant.exceptions import ConfigEntryAuthFailed, ConfigEntryNotReady
 from homeassistant.helpers.update_coordinator import DataUpdateCoordinator
+from pap_spinel import SpinelTransportError
 
 from .const import DEFAULT_SCAN_INTERVAL, DOMAIN
 
@@ -22,7 +21,6 @@ if TYPE_CHECKING:
         PapouchSerialClient,
         PapouchSerialDevice,
     )
-
     from homeassistant.config_entries import ConfigEntry
     from homeassistant.core import HomeAssistant
 
@@ -41,6 +39,9 @@ class PapouchBaseCoordinator(DataUpdateCoordinator, ABC):
         """Close resources used by the coordinator."""
 
 
+type PapouchConfigEntry = ConfigEntry[PapouchBaseCoordinator]
+
+
 class PapouchNetworkDataUpdateCoordinator(PapouchBaseCoordinator):
     """Class to manage fetching Papouch network data."""
 
@@ -48,7 +49,7 @@ class PapouchNetworkDataUpdateCoordinator(PapouchBaseCoordinator):
         self,
         hass: HomeAssistant,
         api_client: PapouchHTTPClient,
-        entry: ConfigEntry,
+        entry: PapouchConfigEntry,
         device: PapouchNetworkDevice,
     ) -> None:
         """Initialize the coordinator."""
