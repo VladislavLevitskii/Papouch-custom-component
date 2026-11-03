@@ -13,7 +13,6 @@ select = [
     "TRY", "UP", "W"
 ]
 
-# Ignorování pravidel podle Home Assistant Core
 ignore = [
     "ASYNC109", "ASYNC110", "ASYNC240", "B008", "B019",
     "D202", "D203", "D212", "D213", "D406", "D407", "D417",

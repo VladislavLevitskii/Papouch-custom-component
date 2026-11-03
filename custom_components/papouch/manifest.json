@@ -21,8 +21,8 @@
   "iot_class": "local_polling",
   "issue_tracker": "https://github.com/VladislavLevitskii/Papouch-custom-component/issues",
   "requirements": [
-    "aiopapouch==0.4.4",
+    "aiopapouch==0.4.5",
     "pap_spinel==0.1.4"
   ],
-  "version": "1.4.2"
+  "version": "1.4.6"
 }

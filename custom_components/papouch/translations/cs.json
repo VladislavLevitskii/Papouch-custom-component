@@ -19,6 +19,7 @@
     "error": {
       "cannot_connect": "Nepodařilo se připojit k zařízení.",
       "device_empty_mode": "Zařízení neposkytlo svůj režim.",
+      "device_not_tcp_server": "Zařízení bylo nakonfigurováno v režimu TCP server, ale nyní v tomto režimu není.",
       "invalid_auth": "Zadané admin heslo je neplatné, zkuste jiné.",
       "invalid_ip_format": "Neplatný formát IPv4 adresy.",
       "unsupported_converter": "Tento převodník není podporován. Zkontrolujte prosím, zda tato IP adresa patří převodníku a ne jinému zařízení."
@@ -171,6 +172,20 @@
           "port": "Zadejte cestu k sériovému portu (např. /dev/ttyUSB0 nebo COM1)."
         },
         "description": "Manuálně aktualizujte podrobnosti o sériovém připojení pro vaše zařízení.",
+        "title": "Manuálně přenastavit {name}"
+      },
+      "reconfigure_tcp": {
+        "data": {
+          "host": "IPv4 adresa",
+          "password": "Admin heslo (volitelné)",
+          "web_port": "HTTP Port"
+        },
+        "data_description": {
+          "host": "Zadejte novou IPv4 adresu vašeho síťového hubu.",
+          "password": "Zadejte nové admin heslo administrátora zařízení (volitelné).",
+          "web_port": "Zadejte HTTP port zařízení."
+        },
+        "description": "Manuálně aktualizujte podrobnosti o TCP server připojení pro vaše zařízení.",
         "title": "Manuálně přenastavit {name}"
       },
       "serial_hub": {

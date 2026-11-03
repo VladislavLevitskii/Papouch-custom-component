@@ -27,6 +27,9 @@ if TYPE_CHECKING:
 _LOGGER = logging.getLogger(__name__)
 
 
+type PapouchConfigEntry = ConfigEntry[PapouchBaseCoordinator]
+
+
 class PapouchBaseCoordinator(DataUpdateCoordinator, ABC):
     """Base class for Papouch data update coordinators."""
 
@@ -37,9 +40,6 @@ class PapouchBaseCoordinator(DataUpdateCoordinator, ABC):
 
     async def async_close(self) -> None:
         """Close resources used by the coordinator."""
-
-
-type PapouchConfigEntry = ConfigEntry[PapouchBaseCoordinator]
 
 
 class PapouchNetworkDataUpdateCoordinator(PapouchBaseCoordinator):
@@ -103,7 +103,7 @@ class PapouchSerialDataUpdateCoordinator(PapouchBaseCoordinator):
         self,
         hass: HomeAssistant,
         api_client: PapouchSerialClient,
-        entry: ConfigEntry,
+        entry: PapouchConfigEntry,
         devices: list[PapouchSerialDevice],
     ) -> None:
         """Initialize the serial coordinator."""
