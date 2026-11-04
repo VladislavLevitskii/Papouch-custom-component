@@ -4,13 +4,15 @@
       "already_configured": "Toto zařízení je již nakonfigurováno, můžete jej z integrace smazat a nakonfigurovat znovu.",
       "cannot_connect": "Home Assistant se nemůže připojit k zařízení.",
       "converter_different_mode": "Převodník je v jiném režimu, změňte prosím jeho režim na TCP server.",
+      "device_not_tcp_mode": "Zařízení bylo nakonfigurováno v režimu TCP server, ale nyní v tomto režimu není.",
+      "device_not_web_mode": "Zařízení bylo nakonfigurováno v režimu WEB, ale nyní v tomto režimu není.",
       "invalid_response": "Neplatná odpověď ze zařízení, zkontrolujte logy pro více informací.",
       "mode_is_missing": "Zařízení neposkytlo svůj aktuální režim.",
       "reauth_successful": "Opětovné ověření bylo úspěšné.",
       "reconfigure_successful": "Přenastavení zařízení bylo úspěšné.",
       "unreachable": "Tato chyba by neměla nastat. Nedosažitelný kód v konfiguračním procesu.",
       "unsupported_device": "Toto zařízení není podporováno.",
-      "web_mode_required": "Integrace vyžaduje, aby zařízení fungovalo v režimu WEB nebo jako TCP server."
+      "web_tcp_modes_required": "Integrace vyžaduje, aby zařízení fungovalo v režimu WEB nebo jako TCP server."
     },
     "create_entry": {
       "default": "Zařízení bylo úspěšně nakonfigurováno.",
@@ -19,7 +21,6 @@
     "error": {
       "cannot_connect": "Nepodařilo se připojit k zařízení.",
       "device_empty_mode": "Zařízení neposkytlo svůj režim.",
-      "device_not_tcp_server": "Zařízení bylo nakonfigurováno v režimu TCP server, ale nyní v tomto režimu není.",
       "invalid_auth": "Zadané admin heslo je neplatné, zkuste jiné.",
       "invalid_ip_format": "Neplatný formát IPv4 adresy.",
       "unsupported_converter": "Tento převodník není podporován. Zkontrolujte prosím, zda tato IP adresa patří převodníku a ne jinému zařízení."

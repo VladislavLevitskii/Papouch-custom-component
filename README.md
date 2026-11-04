@@ -4,72 +4,16 @@ The **Papouch** integration allows you to integrate your [Papouch](https://papou
 
 The integration works by continuously polling the device for real-time data and updating the corresponding Home Assistant entities. In addition to monitoring, it provides command entities to control the device outputs, and configuration entities to adjust hardware settings, such as counter modes and sensor types.
 
-## Home Assistant Custom Component Installation Guide
+[![Open your Home Assistant instance and open a repository in the Marketplace.](https://my.home-assistant.io/badges/marketplace_repository.svg)](https://my.home-assistant.io/redirect/marketplace_repository/?owner=VladislavLevitskii&repository=Papouch-custom-component)
 
-Installing custom components can be done using HACS (Home Assistant Community Store) or manually via the terminal.
+For installation you can use the link above or you can:
 
-### Why HACS is the Recommended Method
+1. Go to **Settings** > **Marketplace** > **Browse**
+2. Search for **"Papouch"**
 
-While HACS requires an initial setup since it is not included in Home Assistant by default, it is highly recommended over the manual terminal method for the following reasons:
-
-* **Automated Updates:** HACS tracks the component's GitHub repository and notifies you of new releases, allowing for one-click updates directly from the UI.
-* **Version Control:** You can easily roll back to a previous version of the integration if a new release introduces bugs or breaking changes.
-* **Error Reduction:** It automates the download, extraction, and placement of files, preventing common manual errors such as incorrect directory paths or permission issues.
-* **Centralized Management:** It provides a dedicated interface to view, manage, and remove all your custom integrations in one place.
-
----
-
-### Method 1: Installation via HACS
-
-You can skip the first and the second step if you already have HACS installed.
-
-1. Install HACS by following the official [guide](https://hacs.xyz/docs/use/).
-2. Restart Home Assistant and configure the HACS integration.
-3. Open the Home Assistant web interface and navigate to **HACS** in left side menu.
-     - If you don't have the button or HACS is missing, clear your browser cache / do a hard refresh (Ctrl+F5) or go directly to `http://your_ip:8123/hacs/dashboard`.
-4. Click the three dots in the top right corner and select **Custom repositories**.
-5. Enter this GitHub repository URL of the component into the **Repository** field: `https://github.com/VladislavLevitskii/Papouch-custom-component`
-6. Select **Integration** in the **Category** dropdown and click **Add**.
-7. Close the dialog. The component will now appear in your available repositories.
-8. Click on it and select **Download** in the bottom right corner.
-9. Navigate to **Settings** > **System** and restart Home Assistant.
-10. After the restart, go to **Settings** > **Devices & Services**, click **Add Integration**, and search for the **Papouch** to configure it.
-
----
-
-### Method 2: Manual Installation via Terminal
-
-If you prefer not to install HACS and forfeit automated updates, you can download the component manually using the command line. You will need access to the terminal (for example, via the **Advanced SSH & Web Terminal** add-on).
-
-1. Connect to your Home Assistant terminal.
-2. Run the following commands to download and extract the component files into the correct directory:
-
-```bash
-# Navigate to the Home Assistant configuration directory
-cd /config
-
-# Create the custom_components directory if it does not exist
-mkdir -p custom_components
-
-# Navigate into the custom_components directory
-cd custom_components
-
-# Download the component archive from GitHub
-wget https://github.com/VladislavLevitskii/Papouch-custom-component/archive/refs/heads/main.zip
-
-# Extract the downloaded archive
-unzip main.zip
-
-# Move the integration files directly into custom_components
-mv Papouch-custom-component-main/custom_components/papouch ./
-
-# Remove the downloaded archive and unnecessary extracted directories
-rm main.zip
-rm -rf Papouch-custom-component-main
-```
-
-3. Navigate to **Settings** > **System** and restart Home Assistant.
-4. After a successful restart, go to **Settings** > **Devices & Services**, click **Add Integration**, and search for the component to activate it.
+> **Note**:
+> This integration requires Home Assistant version **2026.11** or newer.
+> If you are running an older version, you can still install it via HACS.
 
 ## Supported devices
 
@@ -121,7 +65,7 @@ If your device was not discovered automatically, you can complete the setup manu
 > If the device doesn't have any password set and you provide one in the setup, it will work; however, the reverse will fail if the device expects a password that is not provided.
 
 > **Note:**
-> Some devices can run in different modes, like TCP client or TCP server. If you try to set up a device that is not in **WEB** mode, the integration will detect this and offer to switch it to **WEB** mode or abort the setup. Other modes are not supported because the device must run in **WEB** mode for the integration to work.
+> Some devices can run in different modes, like TCP client or UDP. If you try to set up a device that is not in **WEB** or **TCP** mode, the integration will detect this and offer to switch it to **WEB** mode or abort the setup.
 
 > **Note:**
 > The device must be powered on and reachable by Home Assistant during the initial setup. The integration cannot be configured with an offline IP address because it needs to fetch the hardware configuration data to create a valid instance.
@@ -130,12 +74,15 @@ If your device was not discovered automatically, you can complete the setup manu
 
 If your device's IP address or access password changes, you can update the integration settings without removing and re-adding the device:
 
-1. Go to **Settings** > **Devices & services**" and select the Papouch integration.
+1. Go to **Settings** > **Devices & services** and select the Papouch integration.
 2. Select the three dots menu, then select **Reconfigure**.
 3. You can update the IP address, password or HTTP port as needed.
 
 > **Note:**
 > The reconfiguration flow updates the connection credentials and IP address used by Home Assistant to communicate with the device. It does not modify the physical device's internal configuration (such as changing its IP address or password on the device itself).
+
+> **Warning:**
+> You can reconfigure a device only if the mode didn't change. Example: If a device was configured using e.g. TCP server mode and later you will change it to WEB mode and try to reconfigure it, the error will be raised. You need to manually change the mode mode back or just delete the entry and configure the device again.
 
 #### Polling interval
 
@@ -340,3 +287,7 @@ To apply these hardware changes:
 3. Click the three dots next to your Papouch integration and select **Reload**.
 
 The integration will fetch the updated hardware layout and create the new entities. The old entity (e.g., the previous thermometer) will become `unavailable` and you can manually delete it from the Home Assistant entity registry. Thanks to MAC address/Serial number identification, you will not lose any historical data for the sensors that remained untouched.
+
+## Support and Issues
+
+If you encounter any bugs, issues, or have feature requests, please open an issue.

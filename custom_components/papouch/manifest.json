@@ -24,5 +24,5 @@
     "aiopapouch==0.4.5",
     "pap_spinel==0.1.4"
   ],
-  "version": "1.4.6"
+  "version": "1.4.7"
 }
