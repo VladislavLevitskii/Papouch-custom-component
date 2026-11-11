@@ -453,14 +453,15 @@ async def async_setup_entry(hass: HomeAssistant, entry: PapouchConfigEntry) -> N
         case ConnectionType.NETWORK_HUB:
             coordinator = await _async_setup_network_hub_entry(hass, entry)
         case _:
+            placeholder = {
+                CONNECTION_TYPE: str(
+                    connection_type
+                ),  # in case we stored something else
+            }
             raise ConfigEntryError(
                 translation_domain=DOMAIN,
                 translation_key="unknown_connection_type",
-                translation_placeholders={
-                    "connection_type": str(
-                        connection_type
-                    ),  # in case we stored something else
-                },
+                translation_placeholders=placeholder,
             )
 
     await coordinator.async_config_entry_first_refresh()
