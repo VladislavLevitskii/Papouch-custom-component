@@ -6,8 +6,8 @@ import logging
 import re
 from typing import TYPE_CHECKING, Any, override
 
+import probatio as prob
 import serial.tools.list_ports
-import voluptuous as vol
 from aiopapouch import (
     PapouchHTTPClient,
     async_discover_papouch_devices,
@@ -15,6 +15,7 @@ from aiopapouch import (
     create_network_device,
     is_device_supported,
 )
+from aiopapouch.const import CONNECTION_TYPE, ConnectionType
 from aiopapouch.exceptions import (
     DeviceAuthError,
     DeviceConnectionError,
@@ -78,11 +79,15 @@ class PapouchConfigFlow(ConfigFlow, domain=DOMAIN):
         try:
             await client.fetch_info()
             mode_device = await client.get_device_mode()
-        except DeviceAuthError:
+        except DeviceAuthError as err:
+            _LOGGER.debug("Test connection failed on auth error, err: %s", err)
             return {"base": "invalid_auth"}, None
-        except DeviceConnectionError:
-            _LOGGER.exception("Failed to connect to the device")
+        except DeviceConnectionError as err:
+            _LOGGER.debug("Test connection failed on connection error, err: %s", err)
             return {"base": "cannot_connect"}, None
+        except DeviceParseError as err:
+            _LOGGER.debug("Test connection failed on parsing error, err: %s", err)
+            return {"base": "parse_error"}, None
 
         return {}, mode_device
 
@@ -95,15 +100,33 @@ class PapouchConfigFlow(ConfigFlow, domain=DOMAIN):
 
         try:
             converter = await create_converter(client)
+
             if converter is None:
                 return {"base": "unsupported_converter"}, None, None, None, None
 
             device_mode = await converter.get_mode()
-            formatted_mac = format_mac(converter.conf.identifier)
-            title = f"{converter.conf.context} - {formatted_mac}"
 
-        except DeviceConnectionError, DeviceParseError:
+        except DeviceConnectionError as err:
+            _LOGGER.debug(
+                "Creating converter and retrieving its mode failed on connection error, err: %s",
+                err,
+            )
             return {"base": "cannot_connect"}, None, None, None, None
+        except DeviceParseError as err:
+            _LOGGER.debug(
+                "Creating converter and retrieving its mode failed on parsing error, err: %s",
+                err,
+            )
+            return {"base": "parse_error"}, None, None, None, None
+        except DeviceAuthError as err:
+            _LOGGER.debug(
+                "Creating converter and retrieving its mode failed on auth error, err: %s",
+                err,
+            )
+            return {"base": "invalid_auth"}, None, None, None, None
+
+        formatted_mac = format_mac(converter.conf.identifier)
+        title = f"{converter.conf.context} - {formatted_mac}"
 
         return (
             {},
@@ -173,12 +196,32 @@ class PapouchConfigFlow(ConfigFlow, domain=DOMAIN):
         title = f"{device_name} - {ip_address} - {formatted_mac}"
 
         if mode_device == TCP_SERVER_MODE_INDEX:
-            tcp_port = await client.get_device_tcp_port()
+            try:
+                tcp_port = await client.get_device_tcp_port()
+            except DeviceConnectionError as err:
+                _LOGGER.debug(
+                    "Retrieving TCP port failed on connection error, err: %s",
+                    err,
+                )
+                return {"base": "cannot_connect"}, None
+            except DeviceAuthError as err:
+                _LOGGER.debug(
+                    "Retrieving TCP port failed on auth error, err: %s",
+                    err,
+                )
+                return {"base": "invalid_auth"}, None
+            except DeviceParseError as err:
+                _LOGGER.debug(
+                    "Retrieving TCP port failed on parsing error, err: %s",
+                    err,
+                )
+                return {"base": "parse_error"}, None
+
             await self.async_set_unique_id(formatted_mac)
             self._abort_if_unique_id_configured()
 
             data = {
-                "connection_type": "tcp",
+                CONNECTION_TYPE: ConnectionType.TCP,
                 "host": ip_address,
                 "port": tcp_port,
             }
@@ -204,7 +247,7 @@ class PapouchConfigFlow(ConfigFlow, domain=DOMAIN):
         self._abort_if_unique_id_configured()
 
         data = {
-            "connection_type": "network",
+            CONNECTION_TYPE: ConnectionType.NETWORK,
             "ip_address": ip_address,
             "password": password,
             "device_name": device_name,
@@ -273,11 +316,26 @@ class PapouchConfigFlow(ConfigFlow, domain=DOMAIN):
         try:
             await asyncio.sleep(DHCP_TIMEOUT)
             device_name, device_location = await client.get_device_info()
-        except DeviceConnectionError:
-            _LOGGER.exception("Failed to fetch device info after DHCP")
+        except DeviceConnectionError as err:
+            _LOGGER.debug(
+                "DHCP failed on connection error, err: %s",
+                err,
+            )
             return self.async_abort(reason="cannot_connect")
+        except DeviceParseError as err:
+            _LOGGER.debug(
+                "DHCP failed on parsing error, err: %s",
+                err,
+            )
+            return self.async_abort(reason="parse_error")
+        except DeviceAuthError as err:
+            _LOGGER.debug(
+                "DHCP failed on auth error, err: %s",
+                err,
+            )
+            return self.async_abort(reason="auth_error")
 
-        if not is_device_supported(device_name, "network"):
+        if not is_device_supported(device_name, ConnectionType.NETWORK):
             return self.async_abort(reason="unsupported_device")
 
         title_name = f"{device_name} ({device_location})"
@@ -302,15 +360,17 @@ class PapouchConfigFlow(ConfigFlow, domain=DOMAIN):
             if result:
                 return result
 
-        schema = vol.Schema({
-            vol.Required("refresh_rate", default=DEFAULT_SCAN_INTERVAL): vol.All(
-                int, vol.Range(min=1, max=3600)
-            ),
-            vol.Optional("web_port", default=DEFAULT_WEB_PORT): vol.All(
-                int, vol.Range(min=1, max=65535)
-            ),
-            vol.Optional("password"): str,
-        })
+        schema = prob.Schema(
+            {
+                prob.Required("refresh_rate", default=DEFAULT_SCAN_INTERVAL): prob.All(
+                    int, prob.Range(min=1, max=3600)
+                ),
+                prob.Optional("web_port", default=DEFAULT_WEB_PORT): prob.All(
+                    int, prob.Range(min=1, max=65535)
+                ),
+                prob.Optional("password"): str,
+            }
+        )
 
         return self.async_show_form(
             step_id="discovery_confirm",
@@ -325,21 +385,25 @@ class PapouchConfigFlow(ConfigFlow, domain=DOMAIN):
     ) -> ConfigFlowResult:
         """Handle the initial step to choose between network or serial hub."""
         if user_input is not None:
-            connection_type = user_input.get("connection_type")
-            if connection_type == "network_device":
+            connection_type = user_input.get(CONNECTION_TYPE)
+            if connection_type == ConnectionType.NETWORK:
                 return await self.async_step_network_device()
-            if connection_type == "network_hub":
+            if connection_type == ConnectionType.NETWORK_HUB:
                 return await self.async_step_network_hub()
-            if connection_type == "serial_hub":
+            if connection_type == ConnectionType.SERIAL:
                 return await self.async_step_serial_hub()
 
-        schema = vol.Schema({
-            vol.Required("connection_type", default="network_device"): vol.In({
-                "network_device": "Network device",
-                "network_hub": "Network hub",
-                "serial_hub": "Serial hub",
-            })
-        })
+        schema = prob.Schema(
+            {
+                prob.Required(CONNECTION_TYPE, default=ConnectionType.NETWORK): prob.In(
+                    {
+                        ConnectionType.NETWORK: "Network device",
+                        ConnectionType.NETWORK_HUB: "Network hub",
+                        ConnectionType.SERIAL: "Serial hub",
+                    }
+                )
+            }
+        )
 
         return self.async_show_form(step_id="user", data_schema=schema)
 
@@ -358,36 +422,39 @@ class PapouchConfigFlow(ConfigFlow, domain=DOMAIN):
             if result:
                 return result
 
-        if self._discovered_ips is None:
-            session = async_get_clientsession(self.hass)
-            results = await async_discover_papouch_devices(session, "network")
+        if not errors:
+            if self._discovered_ips is None:
+                session = async_get_clientsession(self.hass)
+                results = await async_discover_papouch_devices(
+                    session, ConnectionType.NETWORK
+                )
 
-            configured_ips = {
-                entry.data.get("ip_address")
-                for entry in self._async_current_entries()
-                if entry.data.get("ip_address")
-            }
+                configured_ips = {
+                    entry.data.get("ip_address")
+                    for entry in self._async_current_entries()
+                    if entry.data.get("ip_address")
+                }
 
-            filtered_results = {
-                ip: data for ip, data in results.items() if ip not in configured_ips
-            }
+                filtered_results = {
+                    ip: data for ip, data in results.items() if ip not in configured_ips
+                }
 
-            sorted_ips = sorted(filtered_results.keys(), key=ipaddress.ip_address)
-            self._discovered_ips = {}
+                sorted_ips = sorted(filtered_results.keys(), key=ipaddress.ip_address)
+                self._discovered_ips = {}
 
-            for ip in sorted_ips:
-                name, location = filtered_results[ip]
-                self._discovered_ips[ip] = f"{ip} - {name} ({location})"
+                for ip in sorted_ips:
+                    name, location = filtered_results[ip]
+                    self._discovered_ips[ip] = f"{ip} - {name} ({location})"
 
-        if not self._discovered_ips and not self.discovered_ip and not errors:
-            return await self.async_step_manual()
+            if not self._discovered_ips and not self.discovered_ip and not errors:
+                return await self.async_step_manual()
 
-        options = self._discovered_ips.copy()
+            options = self._discovered_ips.copy()
 
-        if self.discovered_ip and self.discovered_ip not in options:
-            options[self.discovered_ip] = f"Unknown device - {self.discovered_ip}"
+            if self.discovered_ip and self.discovered_ip not in options:
+                options[self.discovered_ip] = f"Unknown device - {self.discovered_ip}"
 
-        options["manual"] = "Enter IP manually"
+            options["manual"] = "Enter IP manually"
 
         default_interval = (
             user_input.get("refresh_rate", DEFAULT_SCAN_INTERVAL)
@@ -432,7 +499,7 @@ class PapouchConfigFlow(ConfigFlow, domain=DOMAIN):
             self._abort_if_unique_id_configured()
 
             data = {
-                "connection_type": "serial",
+                CONNECTION_TYPE: ConnectionType.SERIAL,
                 "port": port,
                 "baudrate": baudrate,
             }
@@ -451,13 +518,15 @@ class PapouchConfigFlow(ConfigFlow, domain=DOMAIN):
         if len(list_of_ports) == 1:
             return await self.async_step_serial_manual()
 
-        schema = vol.Schema({
-            vol.Required("port"): vol.In(list_of_ports),
-            vol.Required("baudrate", default=DEFAULT_BAUDRATE): int,
-            vol.Required("refresh_rate", default=DEFAULT_SCAN_INTERVAL): vol.All(
-                int, vol.Range(min=1, max=3600)
-            ),
-        })
+        schema = prob.Schema(
+            {
+                prob.Required("port"): prob.In(list_of_ports),
+                prob.Required("baudrate", default=DEFAULT_BAUDRATE): int,
+                prob.Required("refresh_rate", default=DEFAULT_SCAN_INTERVAL): prob.All(
+                    int, prob.Range(min=1, max=3600)
+                ),
+            }
+        )
 
         return self.async_show_form(
             step_id="serial_hub", data_schema=schema, errors=errors
@@ -497,7 +566,7 @@ class PapouchConfigFlow(ConfigFlow, domain=DOMAIN):
                 self._abort_if_unique_id_configured()
 
                 data = {
-                    "connection_type": "network_hub",
+                    CONNECTION_TYPE: ConnectionType.NETWORK_HUB,
                     "host": host,
                     "baudrate": baudrate,
                     "web_port": web_port,
@@ -517,7 +586,7 @@ class PapouchConfigFlow(ConfigFlow, domain=DOMAIN):
         if self._discovered_ips is None:
             session = async_get_clientsession(self.hass)
             results = await async_discover_papouch_devices(
-                session, connection_type="network_hub"
+                session, connection_type=ConnectionType.NETWORK_HUB
             )
 
             configured_hosts = {
@@ -541,15 +610,17 @@ class PapouchConfigFlow(ConfigFlow, domain=DOMAIN):
 
         default_host = list(options_dict.keys())[0] if options_dict else "manual"
 
-        schema = vol.Schema({
-            vol.Required("host", default=default_host): vol.In(options_dict),
-            vol.Required("baudrate", default=DEFAULT_BAUDRATE): int,
-            vol.Required("refresh_rate", default=DEFAULT_SCAN_INTERVAL): vol.All(
-                int, vol.Range(min=1, max=3600)
-            ),
-            vol.Required("web_port", default=DEFAULT_WEB_PORT): int,
-            vol.Optional("password"): str,
-        })
+        schema = prob.Schema(
+            {
+                prob.Required("host", default=default_host): prob.In(options_dict),
+                prob.Required("baudrate", default=DEFAULT_BAUDRATE): int,
+                prob.Required("refresh_rate", default=DEFAULT_SCAN_INTERVAL): prob.All(
+                    int, prob.Range(min=1, max=3600)
+                ),
+                prob.Required("web_port", default=DEFAULT_WEB_PORT): int,
+                prob.Optional("password"): str,
+            }
+        )
 
         return self.async_show_form(
             step_id="network_hub", data_schema=schema, errors=errors
@@ -586,7 +657,7 @@ class PapouchConfigFlow(ConfigFlow, domain=DOMAIN):
                 self._abort_if_unique_id_configured()
 
                 data = {
-                    "connection_type": "network_hub",
+                    CONNECTION_TYPE: ConnectionType.NETWORK_HUB,
                     "host": host,
                     "baudrate": user_input["baudrate"],
                     "web_port": web_port,
@@ -599,15 +670,17 @@ class PapouchConfigFlow(ConfigFlow, domain=DOMAIN):
                     title=f"{title} - {host}", data=data, options=options
                 )
 
-        schema = vol.Schema({
-            vol.Required("host"): str,
-            vol.Required("baudrate", default=DEFAULT_BAUDRATE): int,
-            vol.Required("refresh_rate", default=DEFAULT_SCAN_INTERVAL): vol.All(
-                int, vol.Range(min=1, max=3600)
-            ),
-            vol.Required("web_port", default=DEFAULT_WEB_PORT): int,
-            vol.Optional("password"): str,
-        })
+        schema = prob.Schema(
+            {
+                prob.Required("host"): str,
+                prob.Required("baudrate", default=DEFAULT_BAUDRATE): int,
+                prob.Required("refresh_rate", default=DEFAULT_SCAN_INTERVAL): prob.All(
+                    int, prob.Range(min=1, max=3600)
+                ),
+                prob.Required("web_port", default=DEFAULT_WEB_PORT): int,
+                prob.Optional("password"): str,
+            }
+        )
 
         return self.async_show_form(
             step_id="network_hub_manual", data_schema=schema, errors=errors
@@ -627,7 +700,7 @@ class PapouchConfigFlow(ConfigFlow, domain=DOMAIN):
             self._abort_if_unique_id_configured()
 
             data = {
-                "connection_type": "serial",
+                CONNECTION_TYPE: ConnectionType.SERIAL,
                 "port": port,
                 "baudrate": baudrate,
             }
@@ -650,13 +723,15 @@ class PapouchConfigFlow(ConfigFlow, domain=DOMAIN):
                 "refresh_rate", DEFAULT_SCAN_INTERVAL
             )
 
-        schema = vol.Schema({
-            vol.Required("port", default="/dev/ttyUSB0"): str,
-            vol.Required("baudrate", default=default_baudrate): int,
-            vol.Required("refresh_rate", default=default_refresh): vol.All(
-                int, vol.Range(min=1, max=3600)
-            ),
-        })
+        schema = prob.Schema(
+            {
+                prob.Required("port", default="/dev/ttyUSB0"): str,
+                prob.Required("baudrate", default=default_baudrate): int,
+                prob.Required("refresh_rate", default=default_refresh): prob.All(
+                    int, prob.Range(min=1, max=3600)
+                ),
+            }
+        )
 
         return self.async_show_form(
             step_id="serial_manual", data_schema=schema, errors=errors
@@ -795,6 +870,7 @@ class PapouchConfigFlow(ConfigFlow, domain=DOMAIN):
             # identifier is a MAC address
             formatted_mac = format_mac(converter.conf.identifier)
 
+            _LOGGER.debug("Initiating switch to TCP server mode for %s", address)
             await converter.switch_to_tcp_server()
 
             (
@@ -808,7 +884,7 @@ class PapouchConfigFlow(ConfigFlow, domain=DOMAIN):
                 raise DeviceConnectionError("Cannot validate network hub")
 
             data = {
-                "connection_type": "network_hub",
+                CONNECTION_TYPE: ConnectionType.NETWORK_HUB,
                 "host": address,
                 "baudrate": self._saved_input["baudrate"],
                 "web_port": web_port,
@@ -882,9 +958,11 @@ class PapouchConfigFlow(ConfigFlow, domain=DOMAIN):
 
         return self.async_show_form(
             step_id="reauth_confirm",
-            data_schema=vol.Schema({
-                vol.Optional("password"): str,
-            }),
+            data_schema=prob.Schema(
+                {
+                    prob.Optional("password"): str,
+                }
+            ),
             errors=errors,
             description_placeholders={
                 "ip_address": self._reauth_entry.data["ip_address"]
@@ -902,9 +980,9 @@ class PapouchConfigFlow(ConfigFlow, domain=DOMAIN):
 
         entry = self._get_reconfigure_entry()
 
-        connection_type = entry.data.get("connection_type", "network")
+        connection_type = entry.data.get("connection_type", ConnectionType.NETWORK)
 
-        if connection_type == "serial":
+        if connection_type == ConnectionType.SERIAL:
             return await self.async_step_reconfigure_serial(user_input)
 
         # here we check the mode of the device if it responds
@@ -920,16 +998,22 @@ class PapouchConfigFlow(ConfigFlow, domain=DOMAIN):
             )
 
             if not errors:
-                if connection_type == "tcp" and mode_device != TCP_SERVER_MODE_INDEX:
+                if (
+                    connection_type == ConnectionType.TCP
+                    and mode_device != TCP_SERVER_MODE_INDEX
+                ):
                     return self.async_abort(reason="device_not_tcp_mode")
 
-                if connection_type == "network" and mode_device != WEB_MODE_INDEX:
+                if (
+                    connection_type == ConnectionType.NETWORK
+                    and mode_device != WEB_MODE_INDEX
+                ):
                     return self.async_abort(reason="device_not_web_mode")
 
-        if connection_type == "network_hub":
+        if connection_type == ConnectionType.NETWORK_HUB:
             return await self.async_step_reconfigure_network_hub(user_input)
 
-        if connection_type == "tcp":
+        if connection_type == ConnectionType.TCP:
             return await self.async_step_reconfigure_tcp(user_input)
 
         # else is plain network device
@@ -963,13 +1047,15 @@ class PapouchConfigFlow(ConfigFlow, domain=DOMAIN):
         if user_input and "web_port" in user_input:
             web_port = user_input["web_port"]
 
-        schema = vol.Schema({
-            vol.Required("ip_address", default=entry.data["ip_address"]): str,
-            vol.Optional("password", default=entry.data.get("password", "")): str,
-            vol.Optional("web_port", default=web_port): vol.All(
-                int, vol.Range(min=1, max=65535)
-            ),
-        })
+        schema = prob.Schema(
+            {
+                prob.Required("ip_address", default=entry.data["ip_address"]): str,
+                prob.Optional("password", default=entry.data.get("password", "")): str,
+                prob.Optional("web_port", default=web_port): prob.All(
+                    int, prob.Range(min=1, max=65535)
+                ),
+            }
+        )
 
         return self.async_show_form(
             step_id="reconfigure",
@@ -1022,16 +1108,18 @@ class PapouchConfigFlow(ConfigFlow, domain=DOMAIN):
                     title=title,
                 )
 
-        schema = vol.Schema({
-            vol.Required("host", default=entry.data.get("host")): str,
-            vol.Required(
-                "baudrate", default=entry.data.get("baudrate", DEFAULT_BAUDRATE)
-            ): int,
-            vol.Required(
-                "web_port", default=entry.data.get("web_port", DEFAULT_WEB_PORT)
-            ): int,
-            vol.Optional("password", default=entry.data.get("password", "")): str,
-        })
+        schema = prob.Schema(
+            {
+                prob.Required("host", default=entry.data.get("host")): str,
+                prob.Required(
+                    "baudrate", default=entry.data.get("baudrate", DEFAULT_BAUDRATE)
+                ): int,
+                prob.Required(
+                    "web_port", default=entry.data.get("web_port", DEFAULT_WEB_PORT)
+                ): int,
+                prob.Optional("password", default=entry.data.get("password", "")): str,
+            }
+        )
 
         return self.async_show_form(
             step_id="reconfigure_network_hub",
@@ -1074,12 +1162,14 @@ class PapouchConfigFlow(ConfigFlow, domain=DOMAIN):
         if current_port not in list_of_ports:
             list_of_ports[current_port] = f"{current_port} - Current port"
 
-        schema = vol.Schema({
-            vol.Required("port", default=current_port): vol.In(list_of_ports),
-            vol.Required(
-                "baudrate", default=entry.data.get("baudrate", DEFAULT_BAUDRATE)
-            ): int,
-        })
+        schema = prob.Schema(
+            {
+                prob.Required("port", default=current_port): prob.In(list_of_ports),
+                prob.Required(
+                    "baudrate", default=entry.data.get("baudrate", DEFAULT_BAUDRATE)
+                ): int,
+            }
+        )
 
         return self.async_show_form(
             step_id="reconfigure_serial",
@@ -1113,10 +1203,14 @@ class PapouchConfigFlow(ConfigFlow, domain=DOMAIN):
         if self._saved_input:
             default_baudrate = self._saved_input.get("baudrate", default_baudrate)
 
-        schema = vol.Schema({
-            vol.Required("port", default=entry.data.get("port", "/dev/ttyUSB0")): str,
-            vol.Required("baudrate", default=default_baudrate): int,
-        })
+        schema = prob.Schema(
+            {
+                prob.Required(
+                    "port", default=entry.data.get("port", "/dev/ttyUSB0")
+                ): str,
+                prob.Required("baudrate", default=default_baudrate): int,
+            }
+        )
 
         return self.async_show_form(
             step_id="reconfigure_serial_manual",
@@ -1150,8 +1244,12 @@ class PapouchConfigFlow(ConfigFlow, domain=DOMAIN):
                 )
                 try:
                     tcp_port = await client.get_device_tcp_port()
-                except DeviceConnectionError, DeviceParseError:
+                except DeviceConnectionError:
                     errors["base"] = "cannot_connect"
+                except DeviceParseError:
+                    errors["base"] = "parse_error"
+                except DeviceAuthError:
+                    errors["base"] = "invalid_auth"
                 else:
                     return self.async_update_reload_and_abort(
                         entry,
@@ -1161,13 +1259,15 @@ class PapouchConfigFlow(ConfigFlow, domain=DOMAIN):
                         },
                     )
 
-        schema = vol.Schema({
-            vol.Required("host", default=entry.data.get("host")): str,
-            vol.Optional("password"): str,
-            vol.Optional("web_port", default=DEFAULT_WEB_PORT): vol.All(
-                int, vol.Range(min=1, max=65535)
-            ),
-        })
+        schema = prob.Schema(
+            {
+                prob.Required("host", default=entry.data.get("host")): str,
+                prob.Optional("password"): str,
+                prob.Optional("web_port", default=DEFAULT_WEB_PORT): prob.All(
+                    int, prob.Range(min=1, max=65535)
+                ),
+            }
+        )
 
         return self.async_show_form(
             step_id="reconfigure_tcp",

@@ -1,9 +1,8 @@
 {
   "domain": "papouch",
   "name": "Papouch",
-  "codeowners": [
-    "@VladislavLevitskii"
-  ],
+  "categories": ["sensors", "plugs_switches"],
+  "codeowners": ["@VladislavLevitskii"],
   "config_flow": true,
   "dhcp": [
     {
@@ -21,8 +20,8 @@
   "iot_class": "local_polling",
   "issue_tracker": "https://github.com/VladislavLevitskii/Papouch-custom-component/issues",
   "requirements": [
-    "aiopapouch==0.4.5",
+    "aiopapouch==0.4.7",
     "pap_spinel==0.1.4"
   ],
-  "version": "1.4.7"
+  "version": "1.4.8"
 }

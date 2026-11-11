@@ -2,12 +2,14 @@
   "config": {
     "abort": {
       "already_configured": "Toto zařízení je již nakonfigurováno, můžete jej z integrace smazat a nakonfigurovat znovu.",
+      "auth_error": "Chyba během autentikace.",
       "cannot_connect": "Home Assistant se nemůže připojit k zařízení.",
       "converter_different_mode": "Převodník je v jiném režimu, změňte prosím jeho režim na TCP server.",
       "device_not_tcp_mode": "Zařízení bylo nakonfigurováno v režimu TCP server, ale nyní v tomto režimu není.",
       "device_not_web_mode": "Zařízení bylo nakonfigurováno v režimu WEB, ale nyní v tomto režimu není.",
       "invalid_response": "Neplatná odpověď ze zařízení, zkontrolujte logy pro více informací.",
       "mode_is_missing": "Zařízení neposkytlo svůj aktuální režim.",
+      "parse_error": "Chyba při parsování dat.",
       "reauth_successful": "Opětovné ověření bylo úspěšné.",
       "reconfigure_successful": "Přenastavení zařízení bylo úspěšné.",
       "unreachable": "Tato chyba by neměla nastat. Nedosažitelný kód v konfiguračním procesu.",
@@ -23,6 +25,7 @@
       "device_empty_mode": "Zařízení neposkytlo svůj režim.",
       "invalid_auth": "Zadané admin heslo je neplatné, zkuste jiné.",
       "invalid_ip_format": "Neplatný formát IPv4 adresy.",
+      "parse_error": "Chyba při parsování dat.",
       "unsupported_converter": "Tento převodník není podporován. Zkontrolujte prosím, zda tato IP adresa patří převodníku a ne jinému zařízení."
     },
     "flow_title": "{name}",
@@ -262,10 +265,10 @@
         "name": "Snížit počítadlo {name} o:"
       },
       "output_off_duration_custom": {
-        "name": "Doba vypnutí výstupu {name} (s)"
+        "name": "Rozepnout výstup {name} na dobu: (s)"
       },
       "output_on_duration_custom": {
-        "name": "Doba zapnutí výstupu {name} (s)"
+        "name": "Sepnout výstup {name} na dobu: (s)"
       },
       "set_counter_custom": {
         "name": "Nastavit počítadlo {name} na:"
@@ -374,7 +377,7 @@
   },
   "exceptions": {
     "cannot_connect": {
-      "message": "Nepodařilo se připojit k zařízení {name} ({location})."
+      "message": "Nepodařilo se připojit k zařízení."
     },
     "cannot_connect_http": {
       "message": "Nepodařilo se připojit k zařízení {name} ({location}) přes HTTP."
@@ -382,17 +385,32 @@
     "cannot_connect_tcp": {
       "message": "Nepodařilo se připojit k zařízení {name} ({location}) přes TCP."
     },
+    "cannot_connect_with_info": {
+      "message": "Nepodařilo se připojit k zařízení {name} ({location})."
+    },
     "command_failed": {
       "message": "Nepodařilo se provést příkaz {cmd} na {name}."
     },
     "invalid_auth": {
+      "message": "Neplatné admin heslo zařízení."
+    },
+    "invalid_auth_with_info": {
       "message": "Neplatné admin heslo pro zařízení {name} ({location})."
     },
-    "unable_create_device": {
-      "message": "Zařízení se sériovým číslem {serial_number} se nepodařilo vytvořit."
+    "logic_error_with_info": {
+      "message": "Logická chyba při zpracování dat ze zařízení {name} ({location})."
+    },
+    "parsing_error": {
+      "message": "Chyba při parsování dat."
+    },
+    "parsing_error_with_info": {
+      "message": "Chyba při parsování dat ze zařízení {name} ({location})."
     },
     "unable_open_port": {
       "message": "Nepodařilo se otevřít port {port}."
+    },
+    "unknown_connection_type": {
+      "message": "Neznámý nebo chybějící typ připojení: {connection_type}."
     },
     "unsupported_device": {
       "message": "Zařízení {name} ({location}) není podporováno."
@@ -406,12 +424,13 @@
     "error": {
       "address_already_used": "Tato adresa je již používána jiným zařízením.",
       "assign_failed": "Zařízení po několika pokusech neodpovědělo. Ověřte prosím, že je sériové číslo správné, zařízení je zapnuté a připojené ke sběrnici.",
+      "assign_parsing_failed": "Během přiřazování nové adresy vrátilo zařízení nezpracovatelnou odpověď.",
       "cannot_connect": "K zařízení na dané adrese se nelze připojit.",
       "cannot_connect_broadcast": "K zařízení se nelze připojit přes broadcast.",
       "invalid_serial_format": "Neplatný formát. Sériové číslo musí obsahovat lomítko (např. 0123/4567).",
       "no_free_addresses": "V rozsahu adres nezůstaly žádné volné adresy (0-253).",
+      "parse_error": "Chyba při parsování dat.",
       "serial_already_used": "Toto sériové číslo se již používá.",
-      "unable_create_device": "Zařízení se nepodařilo vytvořit nebo se nepodařilo načíst sériové číslo.",
       "unsupported_device": "Toto zařízení {device_name} není podporováno."
     },
     "step": {
@@ -439,7 +458,7 @@
         "menu_options": {
           "add_device_by_address": "Podle adresy",
           "add_device_by_serial_number": "Podle sériového čísla",
-          "add_device_via_broadcast": "Přes Broadcast"
+          "add_device_via_broadcast": "Přes broadcast"
         },
         "title": "Přidat zařízení"
       },
@@ -465,7 +484,7 @@
         }
       },
       "remove_all_devices": {
-        "title": "Remove Device"
+        "title": "Odebrat všechna zařízení"
       },
       "remove_device": {
         "data": {
