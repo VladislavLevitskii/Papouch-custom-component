@@ -25,7 +25,7 @@ from homeassistant.exceptions import (
 )
 from homeassistant.helpers import device_registry as dr
 from homeassistant.helpers.aiohttp_client import async_get_clientsession
-from pap_spinel import SerialTransport, SpinelTransportError, TcpTransport
+from pap_spinel import SerialTransport, TcpTransport
 
 from .const import (
     DEFAULT_WEB_PORT,
@@ -420,7 +420,7 @@ async def _async_setup_network_hub_entry(
 
     try:
         await serial_client.open()
-    except SpinelTransportError as err:
+    except DeviceConnectionError as err:
         raise ConfigEntryNotReady(
             translation_domain=DOMAIN,
             translation_key="cannot_connect_tcp",
@@ -471,7 +471,9 @@ async def async_setup_entry(hass: HomeAssistant, entry: PapouchConfigEntry) -> N
 
 async def async_unload_entry(hass: HomeAssistant, entry: PapouchConfigEntry) -> None:
     """Unload a config entry."""
-    await hass.config_entries.async_unload_platforms(entry, PLATFORMS)
+    unload_ok = await hass.config_entries.async_unload_platforms(entry, PLATFORMS)
+    if unload_ok:
+        await entry.runtime_data.async_close()
 
 
 async def update_listener(hass: HomeAssistant, entry: ConfigEntry) -> None:
