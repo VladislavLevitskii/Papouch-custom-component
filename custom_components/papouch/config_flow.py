@@ -905,6 +905,7 @@ class PapouchConfigFlow(ConfigFlow, domain=DOMAIN):
             formatted_mac = format_mac(mac_address)
 
             data = {
+                CONNECTION_TYPE: ConnectionType.NETWORK,
                 "ip_address": address,
                 "password": password,
                 "device_name": device.conf.context,
