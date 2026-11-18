@@ -327,6 +327,7 @@ async def _async_setup_tcp_entry(
             "Connection failed in `create_serial_device`, original err: %s",
             err,
         )
+        await serial_client.close()
         raise ConfigEntryNotReady(
             translation_domain=DOMAIN,
             translation_key="cannot_connect_with_info",
@@ -337,6 +338,7 @@ async def _async_setup_tcp_entry(
             "Parsing failed in `create_serial_device`, original err: %s",
             err,
         )
+        await serial_client.close()
         raise ConfigEntryNotReady(
             translation_domain=DOMAIN,
             translation_key="parsing_error_with_info",
@@ -347,6 +349,7 @@ async def _async_setup_tcp_entry(
             "Logic error occurred in `create_serial_device`, original err: %s",
             err,
         )
+        await serial_client.close()
         raise ConfigEntryNotReady(
             translation_domain=DOMAIN,
             translation_key="logic_error_with_info",
@@ -354,6 +357,7 @@ async def _async_setup_tcp_entry(
         ) from err
 
     if not device:
+        await serial_client.close()
         raise ConfigEntryNotReady(
             translation_domain=DOMAIN,
             translation_key="unsupported_device",
@@ -361,11 +365,16 @@ async def _async_setup_tcp_entry(
         )
 
     session = async_get_clientsession(hass)
-    network_client = PapouchHTTPClient(host, session)
+    password = entry.data.get("password")
+    web_port = entry.data.get("web_port", DEFAULT_WEB_PORT)
+    network_client = PapouchHTTPClient(
+        host, session, password=password or "", web_port=web_port
+    )
 
     try:
         mac_address = await network_client.get_device_mac()
     except DeviceConnectionError as err:
+        await serial_client.close()
         raise ConfigEntryNotReady(
             translation_domain=DOMAIN,
             translation_key="cannot_connect_http",
@@ -375,6 +384,7 @@ async def _async_setup_tcp_entry(
             },
         ) from err
     except DeviceAuthError as err:
+        await serial_client.close()
         raise ConfigEntryNotReady(
             translation_domain=DOMAIN,
             translation_key="invalid_auth_with_info",
@@ -384,6 +394,7 @@ async def _async_setup_tcp_entry(
             },
         ) from err
     except DeviceParseError as err:
+        await serial_client.close()
         raise ConfigEntryNotReady(
             translation_domain=DOMAIN,
             translation_key="parsing_error_with_info",

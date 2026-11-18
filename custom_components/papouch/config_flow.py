@@ -224,6 +224,8 @@ class PapouchConfigFlow(ConfigFlow, domain=DOMAIN):
                 CONNECTION_TYPE: ConnectionType.TCP,
                 "host": ip_address,
                 "port": tcp_port,
+                "password": password,
+                "web_port": web_port,
             }
             options = {
                 "refresh_rate": user_input.get("refresh_rate", DEFAULT_SCAN_INTERVAL)
@@ -412,6 +414,7 @@ class PapouchConfigFlow(ConfigFlow, domain=DOMAIN):
     ) -> ConfigFlowResult:
         """Handle the network device setup featuring active UDP discovery."""
         errors: dict[str, str] = {}
+        options: dict[str, str] = {}
 
         if user_input is not None:
             if user_input["ip_address"] == "manual":
@@ -1285,10 +1288,10 @@ class PapouchConfigFlow(ConfigFlow, domain=DOMAIN):
         schema = prob.Schema(
             {
                 prob.Required("host", default=entry.data.get("host")): str,
-                prob.Optional("password"): str,
                 prob.Optional("web_port", default=DEFAULT_WEB_PORT): prob.All(
                     int, prob.Range(min=1, max=65535)
                 ),
+                prob.Optional("password"): str,
             }
         )
 
